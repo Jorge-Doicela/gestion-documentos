@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class NormativaDocumento extends Model
 {
+    use HasFactory;
+
     protected $table = 'normativas_documentos';
 
     protected $fillable = [
@@ -13,7 +16,8 @@ class NormativaDocumento extends Model
         'contenido',
     ];
 
-    public function tipo()
+    // Tipo de documento asociado
+    public function tipoDocumento()
     {
         return $this->belongsTo(TipoDocumento::class, 'tipo_documento_id');
     }
