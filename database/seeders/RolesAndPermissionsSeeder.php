@@ -13,7 +13,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Limpiar cache de permisos y roles
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Crear permisos básicos del sistema
+        // Crear permisos
         $permissions = [
             'manage users',
             'manage documents',

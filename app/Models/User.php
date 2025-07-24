@@ -7,6 +7,13 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+// Importar modelos relacionados
+use App\Models\Documento;
+use App\Models\Certificado;
+use App\Models\Comentario;
+use App\Models\VersionDocumento;
+use App\Models\LogActividad;
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;

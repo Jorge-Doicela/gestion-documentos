@@ -5,35 +5,34 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
 
 class UsersSeeder extends Seeder
 {
     public function run()
     {
-        // Crear usuario Administrador
+        // Crear usuario Administrador General
         $admin = User::create([
             'name' => 'Admin General',
             'email' => 'admin@instituto.edu',
-            'password' => Hash::make('password123'), // Cambiar por algo seguro
+            'password' => Hash::make('password123'), // Cambiar por contraseña segura
         ]);
-        $admin->assignRole('Administrador');
+        $admin->assignRole('Administrador General');
 
-        // Crear usuario Coordinador
+        // Crear usuario Coordinador de Prácticas
         $coordinador = User::create([
             'name' => 'Coordinador de Prácticas',
             'email' => 'coordinador@instituto.edu',
             'password' => Hash::make('password123'),
         ]);
-        $coordinador->assignRole('Coordinador');
+        $coordinador->assignRole('Coordinador de Prácticas');
 
-        // Crear usuario Tutor
+        // Crear usuario Tutor Académico
         $tutor = User::create([
             'name' => 'Tutor Académico',
             'email' => 'tutor@instituto.edu',
             'password' => Hash::make('password123'),
         ]);
-        $tutor->assignRole('Tutor');
+        $tutor->assignRole('Tutor Académico');
 
         // Crear usuario Estudiante
         $estudiante = User::create([
