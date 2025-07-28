@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+// Remove the 'use' statements for Event, Login, Logout, LogSuccessfulLogin, LogSuccessfulLogout
+// unless you're using them elsewhere in bootstrap/app.php for other purposes.
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -11,15 +13,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Añade tu middleware CheckIfBlocked al grupo 'web'
-
-
+        // ... your middleware configuration ...
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'check.role' => \App\Http\Middleware\CheckRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // ... your exception handling ...
     })
+    // ->withEvents(...) <-- REMOVE THIS BLOCK
     ->create();

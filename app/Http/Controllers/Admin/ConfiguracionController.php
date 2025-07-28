@@ -1,5 +1,7 @@
 <?php
 
+// app/Http/Controllers/Admin/ConfiguracionController.php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -21,14 +23,20 @@ class ConfiguracionController extends Controller
 
     public function update(Request $request, Configuracion $configuracion)
     {
-        $request->validate([
-            'valor' => 'required|string|max:1000',
-        ]);
+        $rules = ['valor' => 'required|string|max:1000'];
+
+        // Ejemplo: validación especial para tamaño máximo
+        if ($configuracion->clave === 'max_file_size_mb') {
+            $rules['valor'] = 'required|integer|min:1|max:100';
+        }
+
+        $request->validate($rules);
 
         $configuracion->update([
             'valor' => $request->valor,
         ]);
 
-        return redirect()->route('admin.configuraciones.index')->with('success', 'Configuración actualizada correctamente.');
+        return redirect()->route('admin.configuraciones.index')
+            ->with('success', 'Configuración actualizada correctamente.');
     }
 }

@@ -5,6 +5,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TipoDocumentoController;
 use App\Http\Controllers\Admin\ConfiguracionController;
+use App\Http\Controllers\Admin\NormativaDocumentoController;
+use App\Http\Controllers\NormativaPublicController;
+use App\Http\Controllers\Admin\LogActividadController;
+
 
 // Página de bienvenida
 Route::get('/', function () {
@@ -23,22 +27,29 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Paneles según rol
-Route::middleware(['role:Administrador General'])->group(function () {
+// Paneles según rol, siempre con 'auth' antes que 'role'
+Route::middleware(['auth', 'role:Administrador General'])->group(function () {
     Route::get('/admin', [UserController::class, 'index'])->name('admin.dashboard');
 });
 
-Route::middleware(['role:Coordinador de Prácticas'])->group(function () {
+Route::middleware(['auth', 'role:Coordinador de Prácticas'])->group(function () {
     Route::get('/coordinador', [\App\Http\Controllers\Coordinador\CoordinadorController::class, 'index'])->name('coordinador.dashboard');
 });
 
-Route::middleware(['role:Tutor Académico'])->group(function () {
+Route::middleware(['auth', 'role:Tutor Académico'])->group(function () {
     Route::get('/tutor', [\App\Http\Controllers\TutorController::class, 'index'])->name('tutor.dashboard');
 });
 
-Route::middleware(['role:Estudiante'])->group(function () {
-    Route::get('/estudiante', [\App\Http\Controllers\EstudianteController::class, 'index'])->name('estudiante.dashboard');
-});
+Route::middleware(['auth', 'role:Estudiante'])
+    ->prefix('estudiante')
+    ->name('estudiante.')
+    ->group(function () {
+        Route::get('/', [\App\Http\Controllers\EstudianteController::class, 'index'])->name('dashboard');
+
+        // CRUD de documentos del estudiante
+        Route::resource('documentos', \App\Http\Controllers\Estudiante\DocumentoController::class)
+            ->only(['index', 'create', 'store']);
+    });
 
 // CRUD de Usuarios y otros módulos - solo para Administrador General
 Route::middleware(['auth', 'role:Administrador General'])
@@ -50,10 +61,20 @@ Route::middleware(['auth', 'role:Administrador General'])
         Route::resource('configuraciones', ConfiguracionController::class)
             ->parameters(['configuraciones' => 'configuracion'])
             ->only(['index', 'edit', 'update']);
+        Route::resource('normativas', NormativaDocumentoController::class);
+
+        // Ruta para logs de actividad con dos URLs distintas (si quieres)
+        Route::get('logs-actividad', [LogActividadController::class, 'index'])->name('logs_actividad.index');
+        Route::get('logs', [LogActividadController::class, 'index'])->name('logs.index');
     });
+
+
 
 // Rutas de autenticación Breeze
 require __DIR__ . '/auth.php';
 
 // Redirección general para /home
 Route::get('/home', fn() => redirect()->route('dashboard'))->name('home');
+
+// Rutas públicas para normativas
+Route::get('/normativas', [NormativaPublicController::class, 'index'])->name('normativas.index');

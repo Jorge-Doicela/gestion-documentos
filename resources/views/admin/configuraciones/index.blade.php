@@ -1,8 +1,10 @@
+{{-- resources/views/admin/configuraciones/index.blade.php --}}
+
 @extends('layouts.app')
 
 @section('content')
     <div class="max-w-4xl mx-auto mt-6">
-        <h1 class="text-2xl font-semibold mb-4">Configuraciones del Sistema</h1>
+        <h1 class="text-2xl font-semibold mb-4">Configuraciones Globales del Sistema</h1>
 
         @if (session('success'))
             <div class="bg-green-200 text-green-800 px-4 py-2 rounded mb-4">
@@ -22,7 +24,7 @@
             <tbody>
                 @foreach ($configuraciones as $config)
                     <tr class="border-t">
-                        <td class="px-4 py-2">{{ $config->clave }}</td>
+                        <td class="px-4 py-2 font-mono">{{ $config->clave }}</td>
                         <td class="px-4 py-2">{{ $config->valor }}</td>
                         <td class="px-4 py-2 text-sm text-gray-600">{{ $config->descripcion }}</td>
                         <td class="px-4 py-2">
