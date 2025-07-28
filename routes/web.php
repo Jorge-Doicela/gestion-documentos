@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\TipoDocumentoController;
+use App\Http\Controllers\Admin\ConfiguracionController;
 
 // Página de bienvenida
 Route::get('/', function () {
@@ -23,13 +25,12 @@ Route::middleware('auth')->group(function () {
 
 // Paneles según rol
 Route::middleware(['role:Administrador General'])->group(function () {
-    Route::get('/admin', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin', [UserController::class, 'index'])->name('admin.dashboard');
 });
 
 Route::middleware(['role:Coordinador de Prácticas'])->group(function () {
     Route::get('/coordinador', [\App\Http\Controllers\Coordinador\CoordinadorController::class, 'index'])->name('coordinador.dashboard');
 });
-
 
 Route::middleware(['role:Tutor Académico'])->group(function () {
     Route::get('/tutor', [\App\Http\Controllers\TutorController::class, 'index'])->name('tutor.dashboard');
@@ -39,12 +40,16 @@ Route::middleware(['role:Estudiante'])->group(function () {
     Route::get('/estudiante', [\App\Http\Controllers\EstudianteController::class, 'index'])->name('estudiante.dashboard');
 });
 
-// CRUD de Usuarios - solo para Administrador General
+// CRUD de Usuarios y otros módulos - solo para Administrador General
 Route::middleware(['auth', 'role:Administrador General'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
         Route::resource('users', UserController::class);
+        Route::resource('tipos-documento', TipoDocumentoController::class);
+        Route::resource('configuraciones', ConfiguracionController::class)
+            ->parameters(['configuraciones' => 'configuracion'])
+            ->only(['index', 'edit', 'update']);
     });
 
 // Rutas de autenticación Breeze

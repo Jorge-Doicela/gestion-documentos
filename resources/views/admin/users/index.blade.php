@@ -33,6 +33,8 @@
                         <td class="py-3 px-6 text-left">{{ $user->email }}</td>
                         <td class="py-3 px-6 text-left">{{ $user->roles->pluck('name')->join(', ') }}</td>
                         <td class="py-3 px-6 text-center">
+                            <a href="{{ route('admin.users.show', $user) }}"
+                                class="text-green-600 hover:text-green-900 mr-2">Ver</a>
                             <a href="{{ route('admin.users.edit', $user) }}"
                                 class="text-blue-600 hover:text-blue-900 mr-2">Editar</a>
                             <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block"
