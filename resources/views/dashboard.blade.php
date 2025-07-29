@@ -46,6 +46,14 @@
                 class="block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center">
                 🧑‍🏫 Panel Tutor Académico
             </a>
+            <a href="{{ route('tutor.revision.index') }}"
+                class="block bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 px-6 rounded-xl shadow text-center mt-4">
+                📝 Revisión de Documentos
+            </a>
+            <a href="{{ route('tutor.historial.index') }}"
+                class="block bg-gray-600 hover:bg-gray-700 text-white font-semibold py-4 px-6 rounded-xl shadow text-center mt-4">
+                📜 Historial de Revisión
+            </a>
         @endrole
 
         @role('Estudiante')
@@ -61,4 +69,15 @@
         @endrole
 
     </div>
+
+    {{-- Botón rápido para ir al Dashboard Tutor, solo visible para Administrador General --}}
+    @role('Administrador General')
+        <div class="mt-10 text-center">
+            <a href="{{ route('tutor.dashboard') }}"
+                class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded shadow">
+                🧑‍🏫 Ir al Dashboard Tutor Académico
+            </a>
+        </div>
+    @endrole
+
 @endsection

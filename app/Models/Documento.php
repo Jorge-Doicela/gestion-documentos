@@ -47,4 +47,8 @@ class Documento extends Model
     {
         return $this->hasMany(Comentario::class, 'documento_id');
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -68,4 +68,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(LogActividad::class);
     }
+
+    // Relación: un tutor tiene muchos estudiantes asignados
+    public function estudiantesAsignados()
+    {
+        return $this->hasMany(User::class, 'tutor_id');
+    }
+
+    // Relación inversa: un estudiante pertenece a un tutor
+    public function tutor()
+    {
+        return $this->belongsTo(User::class, 'tutor_id');
+    }
 }

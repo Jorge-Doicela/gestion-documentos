@@ -16,6 +16,7 @@ class CreateLogsActividadTable extends Migration
             $table->string('ip', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->timestamp('created_at')->useCurrent();
+            // No $table->timestamp('updated_at') ni $table->timestamps()
         });
     }
 

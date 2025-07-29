@@ -10,15 +10,15 @@ class UsersSeeder extends Seeder
 {
     public function run()
     {
-        // Crear usuario Administrador General
+        // ADMINISTRADOR GENERAL
         $admin = User::create([
-            'name' => 'Admin General',
+            'name' => 'Administrador General',
             'email' => 'admin@instituto.edu',
-            'password' => Hash::make('password123'), // Cambiar por contraseña segura
+            'password' => Hash::make('password123'),
         ]);
         $admin->assignRole('Administrador General');
 
-        // Crear usuario Coordinador de Prácticas
+        // COORDINADOR DE PRÁCTICAS
         $coordinador = User::create([
             'name' => 'Coordinador de Prácticas',
             'email' => 'coordinador@instituto.edu',
@@ -26,7 +26,7 @@ class UsersSeeder extends Seeder
         ]);
         $coordinador->assignRole('Coordinador de Prácticas');
 
-        // Crear usuario Tutor Académico
+        // TUTOR ACADÉMICO
         $tutor = User::create([
             'name' => 'Tutor Académico',
             'email' => 'tutor@instituto.edu',
@@ -34,12 +34,30 @@ class UsersSeeder extends Seeder
         ]);
         $tutor->assignRole('Tutor Académico');
 
-        // Crear usuario Estudiante
-        $estudiante = User::create([
-            'name' => 'Estudiante Ejemplo',
-            'email' => 'estudiante@instituto.edu',
-            'password' => Hash::make('password123'),
-        ]);
-        $estudiante->assignRole('Estudiante');
+        // ESTUDIANTES ASIGNADOS AL TUTOR
+        $estudiantes = [
+            [
+                'name' => 'Estudiante Uno',
+                'email' => 'estudiante1@instituto.edu',
+            ],
+            [
+                'name' => 'Estudiante Dos',
+                'email' => 'estudiante2@instituto.edu',
+            ],
+            [
+                'name' => 'Estudiante Tres',
+                'email' => 'estudiante3@instituto.edu',
+            ],
+        ];
+
+        foreach ($estudiantes as $datos) {
+            $estudiante = User::create([
+                'name' => $datos['name'],
+                'email' => $datos['email'],
+                'password' => Hash::make('password123'),
+                'tutor_id' => $tutor->id, // Relación con el tutor
+            ]);
+            $estudiante->assignRole('Estudiante');
+        }
     }
 }
