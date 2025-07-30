@@ -9,6 +9,9 @@ class Documento extends Model
 {
     use HasFactory;
 
+    // Opcional si la tabla se llama "documentos"
+    protected $table = 'documentos';
+
     protected $fillable = [
         'user_id',
         'tipo_documento_id',
@@ -24,25 +27,25 @@ class Documento extends Model
         'fecha_revision' => 'datetime',
     ];
 
-    // Usuario propietario (estudiante que subió el documento)
+    // Relación con usuario propietario
     public function usuario()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Tipo de documento
+    // Relación con tipo de documento
     public function tipoDocumento()
     {
         return $this->belongsTo(TipoDocumento::class, 'tipo_documento_id');
     }
 
-    // Versiones anteriores del documento
+    // Relación con versiones anteriores
     public function versiones()
     {
         return $this->hasMany(VersionDocumento::class, 'documento_id');
     }
 
-    // Comentarios sobre el documento
+    // Relación con comentarios
     public function comentarios()
     {
         return $this->hasMany(Comentario::class, 'documento_id');

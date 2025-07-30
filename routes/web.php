@@ -11,7 +11,6 @@ use App\Http\Controllers\Admin\LogActividadController;
 use App\Http\Controllers\Tutor\DashboardController;
 use App\Http\Controllers\Tutor\TutorEstudianteController;
 use App\Http\Controllers\Coordinador\CoordinadorController;
-use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\Estudiante\DocumentoController;
 use App\Http\Controllers\Tutor\RevisionDocumentosController;
 use App\Http\Controllers\Tutor\RevisionHistorialController;
@@ -55,7 +54,7 @@ Route::middleware(['auth', 'role:Coordinador de Prácticas'])
         Route::put('/documentos-aprobados/{documento}', [CoordinadorDocumentoController::class, 'update'])
             ->name('documentos.update');
 
-        // ✅ Ruta para generar certificado oficial PDF
+        // Ruta para generar certificado oficial PDF
         Route::post('/certificados/generar/{user}', [CoordinadorCertificadoController::class, 'generar'])
             ->name('certificados.generar');
     });
@@ -89,15 +88,16 @@ Route::middleware(['auth', 'role:Estudiante'])
     ->prefix('estudiante')
     ->name('estudiante.')
     ->group(function () {
-        Route::get('/', [EstudianteController::class, 'index'])->name('dashboard');
+        Route::view('/', 'dashboard')->name('dashboard');
 
-        // CRUD parcial de documentos del estudiante (incluye edición y actualización)
         Route::resource('documentos', DocumentoController::class)
             ->only(['index', 'create', 'store', 'edit', 'update']);
 
-        // Ruta para descargar certificado aprobado
-        Route::get('/certificados/descargar/{uuid}', [EstudianteCertificadoController::class, 'descargar'])
+        Route::get('certificados/descargar/{uuid}', [EstudianteCertificadoController::class, 'descargar'])
             ->name('certificados.descargar');
+
+        Route::get('documentos/{documento}/download', [DocumentoController::class, 'download'])
+            ->name('documentos.download');
     });
 
 // Rutas exclusivas para el Administrador General

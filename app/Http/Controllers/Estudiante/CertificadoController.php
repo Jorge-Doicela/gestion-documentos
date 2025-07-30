@@ -11,19 +11,19 @@ class CertificadoController extends Controller
 {
     public function descargar($uuid)
     {
-        // Buscar certificado del usuario autenticado por UUID
+        $user = Auth::user();
+
+        // Buscar certificado del usuario por uuid y user_id
         $certificado = Certificado::where('uuid', $uuid)
-            ->where('user_id', Auth::id())
+            ->where('user_id', $user->id)
             ->firstOrFail();
 
-        $path = 'public/' . $certificado->ruta_pdf;
-
         // Verificar que el archivo exista
-        if (!Storage::exists($path)) {
-            abort(404, 'Certificado no encontrado.');
+        if (!Storage::exists($certificado->ruta_pdf)) {
+            abort(404, 'Certificado no encontrado');
         }
 
-        // Descargar archivo PDF
-        return Storage::download($path, 'certificado_' . Auth::user()->name . '.pdf');
+        // Descargar el archivo con nombre personalizado
+        return Storage::download($certificado->ruta_pdf, "certificado_{$user->name}.pdf");
     }
 }

@@ -86,6 +86,11 @@
                 🎓 Panel Estudiante
             </a>
 
+            <a href="{{ route('estudiante.documentos.index') }}"
+                class="block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">
+                📄 Mis Documentos y Estados
+            </a>
+
             <a href="{{ route('normativas.index') }}"
                 class="block bg-teal-600 hover:bg-teal-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">
                 📚 Ver Normativas

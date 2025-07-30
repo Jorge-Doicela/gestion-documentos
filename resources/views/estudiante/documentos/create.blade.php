@@ -45,7 +45,7 @@
                 <input type="file" name="archivo" id="archivo" accept="application/pdf" required
                     class="mt-1 block w-full border-gray-300 shadow-sm rounded">
                 <p class="text-sm text-gray-500 mt-1">
-                    Tamaño máximo permitido: <strong>{{ number_format($tamanoMaximoMB, 2) }} MB</strong>
+                    Tamaño máximo permitido: <strong>{{ number_format($tamanoMB, 2) }} MB</strong>
                 </p>
                 @error('archivo')
                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>

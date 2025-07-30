@@ -9,6 +9,6 @@ class CoordinadorController extends Controller
 {
     public function index()
     {
-        return view('coordinador.dashboard'); // Crea esta vista luego
+        return view('dashboard'); // Crea esta vista luego
     }
 }
