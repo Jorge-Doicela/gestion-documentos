@@ -9,12 +9,15 @@ use App\Http\Controllers\Admin\NormativaDocumentoController;
 use App\Http\Controllers\NormativaPublicController;
 use App\Http\Controllers\Admin\LogActividadController;
 use App\Http\Controllers\Tutor\DashboardController;
-use App\Http\Controllers\Tutor\TutorEstudianteController; // <-- Aquí el use correcto
+use App\Http\Controllers\Tutor\TutorEstudianteController;
 use App\Http\Controllers\Coordinador\CoordinadorController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\Estudiante\DocumentoController;
 use App\Http\Controllers\Tutor\RevisionDocumentosController;
-
+use App\Http\Controllers\Tutor\RevisionHistorialController;
+use App\Http\Controllers\Coordinador\CoordinadorDocumentoController;
+use App\Http\Controllers\Coordinador\CertificadoController as CoordinadorCertificadoController;
+use App\Http\Controllers\Estudiante\CertificadoController as EstudianteCertificadoController;
 
 // Página de bienvenida
 Route::get('/', function () {
@@ -39,9 +42,23 @@ Route::middleware(['auth', 'role:Administrador General'])->group(function () {
 });
 
 // Panel del Coordinador de Prácticas
-Route::middleware(['auth', 'role:Coordinador de Prácticas'])->group(function () {
-    Route::get('/coordinador', [CoordinadorController::class, 'index'])->name('coordinador.dashboard');
-});
+Route::middleware(['auth', 'role:Coordinador de Prácticas'])
+    ->prefix('coordinador')
+    ->name('coordinador.')
+    ->group(function () {
+        Route::get('/', [CoordinadorController::class, 'index'])->name('dashboard');
+
+        // Documentos aprobados por el tutor y revisión final del coordinador
+        Route::get('/documentos-aprobados', [CoordinadorDocumentoController::class, 'index'])
+            ->name('documentos.aprobados');
+
+        Route::put('/documentos-aprobados/{documento}', [CoordinadorDocumentoController::class, 'update'])
+            ->name('documentos.update');
+
+        // ✅ Ruta para generar certificado oficial PDF
+        Route::post('/certificados/generar/{user}', [CoordinadorCertificadoController::class, 'generar'])
+            ->name('certificados.generar');
+    });
 
 // Rutas para el Tutor Académico
 Route::prefix('tutor')
@@ -62,8 +79,8 @@ Route::prefix('tutor')
             Route::post('/{documento}/rechazar', [RevisionDocumentosController::class, 'rechazar'])->name('rechazar');
         });
 
-        // Nueva ruta historial revisión
-        Route::get('/historial-revision', [\App\Http\Controllers\Tutor\RevisionHistorialController::class, 'index'])
+        // Historial de revisión
+        Route::get('/historial-revision', [RevisionHistorialController::class, 'index'])
             ->name('historial.index');
     });
 
@@ -74,9 +91,13 @@ Route::middleware(['auth', 'role:Estudiante'])
     ->group(function () {
         Route::get('/', [EstudianteController::class, 'index'])->name('dashboard');
 
-        // CRUD de documentos del estudiante (solo index, create, store)
+        // CRUD parcial de documentos del estudiante (incluye edición y actualización)
         Route::resource('documentos', DocumentoController::class)
-            ->only(['index', 'create', 'store']);
+            ->only(['index', 'create', 'store', 'edit', 'update']);
+
+        // Ruta para descargar certificado aprobado
+        Route::get('/certificados/descargar/{uuid}', [EstudianteCertificadoController::class, 'descargar'])
+            ->name('certificados.descargar');
     });
 
 // Rutas exclusivas para el Administrador General
@@ -91,7 +112,7 @@ Route::middleware(['auth', 'role:Administrador General'])
             ->only(['index', 'edit', 'update']);
         Route::resource('normativas', NormativaDocumentoController::class);
 
-        // Logs de actividad (dos URLs opcionales)
+        // Logs de actividad (dos rutas con alias diferente)
         Route::get('logs-actividad', [LogActividadController::class, 'index'])->name('logs_actividad.index');
         Route::get('logs', [LogActividadController::class, 'index'])->name('logs.index');
     });

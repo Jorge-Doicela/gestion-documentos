@@ -24,7 +24,7 @@ class Documento extends Model
         'fecha_revision' => 'datetime',
     ];
 
-    // Usuario propietario
+    // Usuario propietario (estudiante que subió el documento)
     public function usuario()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -36,7 +36,7 @@ class Documento extends Model
         return $this->belongsTo(TipoDocumento::class, 'tipo_documento_id');
     }
 
-    // Versiones anteriores
+    // Versiones anteriores del documento
     public function versiones()
     {
         return $this->hasMany(VersionDocumento::class, 'documento_id');
@@ -46,9 +46,5 @@ class Documento extends Model
     public function comentarios()
     {
         return $this->hasMany(Comentario::class, 'documento_id');
-    }
-    public function user()
-    {
-        return $this->belongsTo(User::class);
     }
 }

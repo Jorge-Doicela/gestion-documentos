@@ -5,6 +5,25 @@
 @section('content')
     <h1 class="text-3xl font-bold mb-8 text-center">Panel Principal</h1>
 
+    @role('Estudiante')
+        @php
+            $certificado = auth()->user()->certificado;
+        @endphp
+
+        @if ($certificado)
+            <div class="max-w-md mx-auto mb-8 p-4 bg-green-100 border border-green-300 rounded text-center">
+                <a href="{{ route('estudiante.certificados.descargar', $certificado->uuid) }}"
+                    class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded shadow">
+                    📥 Descargar Certificado Oficial
+                </a>
+            </div>
+        @else
+            <div class="max-w-md mx-auto mb-8 p-4 bg-yellow-100 border border-yellow-300 rounded text-center text-yellow-700">
+                Su certificado aún no está disponible.
+            </div>
+        @endif
+    @endrole
+
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
         @role('Administrador General')
@@ -38,6 +57,11 @@
             <a href="{{ route('coordinador.dashboard') }}"
                 class="block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center">
                 📋 Panel Coordinador
+            </a>
+
+            <a href="{{ route('coordinador.documentos.aprobados') }}"
+                class="block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">
+                📄 Documentos Aprobados y Certificados
             </a>
         @endrole
 
