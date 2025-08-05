@@ -10,54 +10,86 @@ class UsersSeeder extends Seeder
 {
     public function run()
     {
-        // ADMINISTRADOR GENERAL
-        $admin = User::create([
-            'name' => 'Administrador General',
-            'email' => 'admin@instituto.edu',
-            'password' => Hash::make('password123'),
-        ]);
-        $admin->assignRole('Administrador General');
+        // Admin General
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@inst.edu'],
+            [
+                'name' => 'Admin General',
+                'password' => Hash::make('password123'),
+            ]
+        );
+        $admin->assignRole('Administrador');
 
-        // COORDINADOR DE PRÁCTICAS
-        $coordinador = User::create([
-            'name' => 'Coordinador de Prácticas',
-            'email' => 'coordinador@instituto.edu',
-            'password' => Hash::make('password123'),
-        ]);
-        $coordinador->assignRole('Coordinador de Prácticas');
+        // Coordinador
+        $coord = User::updateOrCreate(
+            ['email' => 'coord@inst.edu'],
+            [
+                'name' => 'Coordinador de Prácticas',
+                'password' => Hash::make('password123'),
+            ]
+        );
+        $coord->assignRole('Coordinador');
 
-        // TUTOR ACADÉMICO
-        $tutor = User::create([
-            'name' => 'Tutor Académico',
-            'email' => 'tutor@instituto.edu',
-            'password' => Hash::make('password123'),
-        ]);
-        $tutor->assignRole('Tutor Académico');
+        // Tutor 1
+        $tutor1 = User::updateOrCreate(
+            ['email' => 'tutor1@inst.edu'],
+            [
+                'name' => 'Tutor Uno',
+                'password' => Hash::make('password123'),
+            ]
+        );
+        $tutor1->assignRole('Tutor');
 
-        // ESTUDIANTES ASIGNADOS AL TUTOR
-        $estudiantes = [
+        // Tutor 2
+        $tutor2 = User::updateOrCreate(
+            ['email' => 'tutor2@inst.edu'],
+            [
+                'name' => 'Tutor Dos',
+                'password' => Hash::make('password123'),
+            ]
+        );
+        $tutor2->assignRole('Tutor');
+
+        // Estudiantes asignados a tutor1
+        $est1 = User::updateOrCreate(
+            ['email' => 'est1@inst.edu'],
             [
                 'name' => 'Estudiante Uno',
-                'email' => 'estudiante1@instituto.edu',
-            ],
+                'password' => Hash::make('password123'),
+                'tutor_id' => $tutor1->id,
+            ]
+        );
+        $est1->assignRole('Estudiante');
+
+        $est2 = User::updateOrCreate(
+            ['email' => 'est2@inst.edu'],
             [
                 'name' => 'Estudiante Dos',
-                'email' => 'estudiante2@instituto.edu',
-            ],
+                'password' => Hash::make('password123'),
+                'tutor_id' => $tutor1->id,
+            ]
+        );
+        $est2->assignRole('Estudiante');
+
+        // Estudiantes asignados a tutor2
+        $est3 = User::updateOrCreate(
+            ['email' => 'est3@inst.edu'],
             [
                 'name' => 'Estudiante Tres',
-                'email' => 'estudiante3@instituto.edu',
-            ],
-        ];
-
-        foreach ($estudiantes as $datos) {
-            $estudiante = User::create([
-                'name' => $datos['name'],
-                'email' => $datos['email'],
                 'password' => Hash::make('password123'),
-                'tutor_id' => $tutor->id, // Relación con el tutor
-            ]);
-            $estudiante->assignRole('Estudiante');
-        }
+                'tutor_id' => $tutor2->id,
+            ]
+        );
+        $est3->assignRole('Estudiante');
+
+        $est4 = User::updateOrCreate(
+            ['email' => 'est4@inst.edu'],
+            [
+                'name' => 'Estudiante Cuatro',
+                'password' => Hash::make('password123'),
+                'tutor_id' => $tutor2->id,
+            ]
+        );
+        $est4->assignRole('Estudiante');
     }
 }

@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder
             RolesSeeder::class,
             UsersSeeder::class,
             ConfiguracionesSeeder::class,
+            TiposDocumentoSeeder::class,
+            NormativasDocumentoSeeder::class,
         ]);
     }
 }

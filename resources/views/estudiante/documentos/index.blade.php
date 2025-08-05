@@ -17,10 +17,7 @@
     <div class="max-w-6xl mx-auto p-4">
         <h1 class="text-2xl font-bold mb-6">📄 Mis Documentos de Prácticas</h1>
 
-        <a href="{{ route('estudiante.documentos.create') }}"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded mb-6 inline-block">
-            ➕ Subir nuevo documento
-        </a>
+        {{-- No botón general para subir, porque ahora se sube por tipo en la tabla --}}
 
         @if (session('success'))
             <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
@@ -73,11 +70,6 @@
                                 @endswitch
                             </td>
                             <td class="border border-gray-300 px-4 py-2 text-sm">
-
-
-
-
-
                                 @if ($item['comentarios']->isNotEmpty())
                                     @php
                                         $comentariosAgrupados = $item['comentarios']->groupBy('seccion');
@@ -131,15 +123,13 @@
                                 @else
                                     <div class="text-sm text-gray-500 italic">No hay comentarios registrados.</div>
                                 @endif
-
-
-
-
                             </td>
                             <td class="border border-gray-300 px-4 py-2">
                                 @if ($item['ruta_archivo'])
                                     <a href="{{ Storage::url($item['ruta_archivo']) }}" target="_blank"
-                                        class="text-blue-600 underline">Ver PDF</a>
+                                        class="text-blue-600 underline">
+                                        Ver PDF
+                                    </a>
                                 @else
                                     <span class="text-gray-400">Sin archivo</span>
                                 @endif
@@ -147,22 +137,45 @@
                             <td class="border border-gray-300 px-4 py-2">
                                 {{ $item['fecha_revision'] ? \Carbon\Carbon::parse($item['fecha_revision'])->format('d/m/Y H:i') : 'Sin revisión' }}
                             </td>
+
                             <td class="border border-gray-300 px-4 py-2">
-                                @if (in_array($item['estado'], ['rechazado', 'no_aprobado']))
-                                    <a href="{{ route('estudiante.documentos.edit', $item['documento_id']) }}"
+                                @if (is_null($item['documento_id']))
+                                    <a href="{{ route('estudiante.documentos.create', ['tipoDocumento' => $item['tipo_documento']->id]) }}"
                                         class="text-blue-600 hover:underline">
-                                        Re-subir
+                                        Subir
                                     </a>
                                 @else
-                                    <span class="text-gray-400">-</span>
+                                    <div class="flex flex-col space-y-1 text-sm">
+                                        <a href="{{ route('estudiante.documentos.show', $item['documento_id']) }}"
+                                            class="text-blue-600 hover:underline">
+                                            Ver
+                                        </a>
+
+                                        <a href="{{ route('estudiante.documentos.edit', $item['documento_id']) }}"
+                                            class="text-yellow-600 hover:underline">
+                                            Corregir
+                                        </a>
+
+                                        <form action="{{ route('estudiante.documentos.destroy', $item['documento_id']) }}"
+                                            method="POST" onsubmit="return confirm('¿Deseas eliminar este documento?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:underline">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
                                 @endif
                             </td>
+
+
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         @endif
     </div>
+
     @if ($certificado)
         <div class="mt-6 p-4 border rounded bg-green-50">
             <h2 class="font-semibold text-lg mb-2">🎉 Certificado disponible</h2>
@@ -173,5 +186,4 @@
             </a>
         </div>
     @endif
-
 @endsection

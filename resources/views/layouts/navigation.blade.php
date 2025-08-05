@@ -47,33 +47,38 @@
 
             {{-- Dropdown usuario y logout --}}
             <div class="ml-4 relative">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button
-                            class="flex items-center text-sm font-medium text-gray-700 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
-                            id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-                            <span>{{ Auth::user()->name }}</span>
-                            <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <a href="{{ route('profile.edit') }}"
-                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-100">Perfil</a>
-
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit"
-                                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-100">
-                                Cerrar sesión
+                @auth
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button
+                                class="flex items-center text-sm font-medium text-gray-700 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
+                                id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                <span>{{ Auth::user()?->name ?? 'Invitado' }}</span>
+                                <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
                             </button>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
+                        </x-slot>
+
+                        <x-slot name="content">
+                            <a href="{{ route('profile.edit') }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-100">Perfil</a>
+
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit"
+                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-100">
+                                    Cerrar sesión
+                                </button>
+                            </form>
+                        </x-slot>
+                    </x-dropdown>
+                @else
+                    <a href="{{ route('login') }}" class="text-gray-700 hover:text-indigo-600 font-semibold">Iniciar
+                        sesión</a>
+                @endauth
             </div>
         </div>
     </div>

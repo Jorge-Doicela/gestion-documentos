@@ -1,5 +1,5 @@
 <?php
-// database/seeders/ConfiguracionesSeeder.php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -9,14 +9,13 @@ class ConfiguracionesSeeder extends Seeder
 {
     public function run()
     {
-        Configuracion::updateOrCreate(
-            ['clave' => 'max_file_size_mb'],
-            ['valor' => '5', 'descripcion' => 'Tamaño máximo permitido para archivos en MB']
-        );
+        $configs = [
+            ['clave' => 'tamanio_maximo_archivo', 'valor' => '5242880', 'descripcion' => 'Tamaño máximo en bytes (5MB)'],
+            ['clave' => 'estados_documento', 'valor' => json_encode(['pendiente', 'no_aprobado', 'aprobado_tutor', 'aprobado_final']), 'descripcion' => 'Estados posibles del documento'],
+        ];
 
-        Configuracion::updateOrCreate(
-            ['clave' => 'storage_base_path'],
-            ['valor' => 'documentos/', 'descripcion' => 'Ruta base para guardar archivos de usuario']
-        );
+        foreach ($configs as $conf) {
+            Configuracion::updateOrCreate(['clave' => $conf['clave']], $conf);
+        }
     }
 }

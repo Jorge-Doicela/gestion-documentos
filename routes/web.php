@@ -18,6 +18,7 @@ use App\Http\Controllers\Coordinador\CoordinadorDocumentoController;
 use App\Http\Controllers\Coordinador\CertificadoController as CoordinadorCertificadoController;
 use App\Http\Controllers\Estudiante\CertificadoController as EstudianteCertificadoController;
 
+
 // Página de bienvenida
 Route::get('/', function () {
     return view('welcome');
@@ -90,8 +91,18 @@ Route::middleware(['auth', 'role:Estudiante'])
     ->group(function () {
         Route::view('/', 'dashboard')->name('dashboard');
 
-        Route::resource('documentos', DocumentoController::class)
-            ->only(['index', 'create', 'store', 'edit', 'update']);
+        // Rutas personalizadas para gestión de documentos
+        Route::prefix('documentos')
+            ->name('documentos.')
+            ->group(function () {
+                Route::get('/', [DocumentoController::class, 'index'])->name('index');
+                Route::get('/create/{tipoDocumento}', [DocumentoController::class, 'create'])->name('create');
+                Route::post('/store', [DocumentoController::class, 'store'])->name('store');
+                Route::get('/edit/{documento}', [DocumentoController::class, 'edit'])->name('edit');
+                Route::put('/update/{documento}', [DocumentoController::class, 'update'])->name('update');
+                Route::get('/show/{documento}', [DocumentoController::class, 'show'])->name('show');
+                Route::delete('/{documento}', [DocumentoController::class, 'destroy'])->name('destroy'); // 🔥 Nueva ruta agregada aquí
+            });
 
         Route::get('certificados/descargar/{uuid}', [EstudianteCertificadoController::class, 'descargar'])
             ->name('certificados.descargar');
@@ -99,6 +110,8 @@ Route::middleware(['auth', 'role:Estudiante'])
         Route::get('documentos/{documento}/download', [DocumentoController::class, 'download'])
             ->name('documentos.download');
     });
+
+
 
 // Rutas exclusivas para el Administrador General
 Route::middleware(['auth', 'role:Administrador General'])

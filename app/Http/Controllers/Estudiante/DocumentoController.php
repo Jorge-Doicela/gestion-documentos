@@ -11,7 +11,6 @@ use App\Models\Documento;
 use App\Models\TipoDocumento;
 use App\Models\Configuracion;
 use App\Models\Certificado;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DocumentoController extends Controller
 {
@@ -19,13 +18,9 @@ class DocumentoController extends Controller
     {
         $user = Auth::user();
 
-        // Obtener todos los tipos de documento
         $tiposDocumento = TipoDocumento::orderBy('orden')->get();
-
-        // Obtener documentos subidos por el usuario, agrupados por tipo_documento_id
         $documentosUsuario = Documento::where('user_id', $user->id)->get()->keyBy('tipo_documento_id');
 
-        // Preparar lista combinada para la vista
         $listaDocumentos = $tiposDocumento->map(function ($tipo) use ($documentosUsuario) {
             $documento = $documentosUsuario->get($tipo->id);
 
@@ -40,18 +35,17 @@ class DocumentoController extends Controller
             ];
         });
 
-        // Obtener certificado activo del usuario
         $certificado = Certificado::where('user_id', $user->id)->first();
 
         return view('estudiante.documentos.index', compact('listaDocumentos', 'certificado'));
     }
 
-    public function create()
+    public function create(TipoDocumento $tipoDocumento)
     {
-        $tiposDocumento = TipoDocumento::orderBy('orden')->get();
         $tamanoMB = Configuracion::where('clave', 'tamano_maximo_documento')->value('valor') ?? 5;
+        $tiposDocumento = TipoDocumento::orderBy('orden')->get();
 
-        return view('estudiante.documentos.create', compact('tiposDocumento', 'tamanoMB'));
+        return view('estudiante.documentos.create', compact('tipoDocumento', 'tamanoMB', 'tiposDocumento'));
     }
 
     public function store(Request $request)
@@ -59,8 +53,7 @@ class DocumentoController extends Controller
         $user = Auth::user();
 
         $tamanoMB = Configuracion::where('clave', 'tamano_maximo_documento')->value('valor') ?? 5;
-        $tamanoKB = $tamanoMB * 1024; // max en KB
-
+        $tamanoKB = $tamanoMB * 1024;
         $rutaBase = Configuracion::where('clave', 'ruta_documentos')->value('valor') ?? 'documentos';
 
         $request->validate([
@@ -73,7 +66,6 @@ class DocumentoController extends Controller
             'tipo_documento_id.exists' => 'El tipo de documento no es válido.',
         ]);
 
-        // Validar si ya existe documento válido para ese tipo
         $existe = Documento::where('user_id', $user->id)
             ->where('tipo_documento_id', $request->tipo_documento_id)
             ->where('estado', '!=', 'rechazado')
@@ -115,10 +107,6 @@ class DocumentoController extends Controller
     {
         $this->authorize('update', $documento);
 
-        if (!in_array($documento->estado, ['rechazado', 'no_aprobado'])) {
-            return redirect()->route('estudiante.documentos.index')->with('error', 'No se puede modificar un documento aprobado o pendiente.');
-        }
-
         $tamanoMB = Configuracion::where('clave', 'tamano_maximo_documento')->value('valor') ?? 5;
         $tamanoKB = $tamanoMB * 1024;
 
@@ -145,11 +133,32 @@ class DocumentoController extends Controller
         return redirect()->route('estudiante.documentos.index')->with('success', 'Documento actualizado y enviado para revisión.');
     }
 
+    public function show(Documento $documento)
+    {
+        $this->authorize('view', $documento);
+
+        $comentarios = $documento->comentarios()->with('usuario')->get();
+
+        return view('estudiante.documentos.show', compact('documento', 'comentarios'));
+    }
+
+    public function destroy(Documento $documento)
+    {
+        $this->authorize('delete', $documento);
+
+        if (Storage::exists($documento->ruta_archivo)) {
+            Storage::delete($documento->ruta_archivo);
+        }
+
+        $documento->delete();
+
+        return redirect()->route('estudiante.documentos.index')->with('success', 'Documento eliminado correctamente.');
+    }
+
     public function download($id)
     {
         $documento = Documento::where('user_id', Auth::id())->findOrFail($id);
 
-        // Validar que el archivo exista
         if (!Storage::exists($documento->ruta_archivo)) {
             abort(404, 'Archivo no encontrado');
         }
@@ -157,7 +166,6 @@ class DocumentoController extends Controller
         return Storage::download($documento->ruta_archivo, $documento->nombre_archivo);
     }
 
-    // Nuevo método para descargar el certificado por UUID
     public function descargarCertificado($uuid)
     {
         $user = Auth::user();
