@@ -63,7 +63,19 @@
                 class="block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">
                 📄 Documentos Aprobados y Certificados
             </a>
+
+            {{-- Accesos adicionales para Coordinador --}}
+            <a href="{{ route('admin.tipos-documento.index') }}"
+                class="block bg-green-600 hover:bg-green-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">
+                📄 Tipos de Documento
+            </a>
+
+            <a href="{{ route('admin.normativas.index') }}"
+                class="block bg-teal-600 hover:bg-teal-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">
+                📚 Gestión de Normativas
+            </a>
         @endrole
+
 
         @role('Tutor Académico')
             <a href="{{ route('tutor.dashboard') }}"
@@ -78,7 +90,14 @@
                 class="block bg-gray-600 hover:bg-gray-700 text-white font-semibold py-4 px-6 rounded-xl shadow text-center mt-4">
                 📜 Historial de Revisión
             </a>
+
+            {{-- Enlace a normativas públicas igual que para estudiantes --}}
+            <a href="{{ route('normativas.index') }}"
+                class="block bg-teal-600 hover:bg-teal-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">
+                📚 Ver Normativas
+            </a>
         @endrole
+
 
         @role('Estudiante')
             <a href="{{ route('estudiante.dashboard') }}"
@@ -98,15 +117,5 @@
         @endrole
 
     </div>
-
-    {{-- Botón rápido para ir al Dashboard Tutor, solo visible para Administrador General --}}
-    @role('Administrador General')
-        <div class="mt-10 text-center">
-            <a href="{{ route('tutor.dashboard') }}"
-                class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded shadow">
-                🧑‍🏫 Ir al Dashboard Tutor Académico
-            </a>
-        </div>
-    @endrole
 
 @endsection

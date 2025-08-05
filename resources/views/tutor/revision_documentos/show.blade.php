@@ -59,8 +59,11 @@
             @foreach ($documento->comentarios as $comentario)
                 <li class="border p-3 rounded bg-gray-50">
                     <strong>{{ $comentario->seccion }}:</strong> {{ $comentario->mensaje }}
-                    <br><span class="text-sm text-gray-500">por {{ $comentario->user->name }} -
-                        {{ $comentario->created_at->format('d/m/Y H:i') }}</span>
+                    <br>
+                    <span class="text-sm text-gray-500">
+                        por {{ $comentario->usuario->name }} ({{ ucfirst($comentario->autor_rol) }}) -
+                        {{ $comentario->created_at->format('d/m/Y H:i') }}
+                    </span>
                 </li>
             @endforeach
         </ul>
@@ -97,12 +100,12 @@
             const nuevo = document.createElement('div');
             nuevo.classList.add('mb-4', 'comentario-item');
             nuevo.innerHTML = `
-            <label class="block mb-1 font-semibold">Sección:</label>
-            <input type="text" name="comentarios[${contador}][seccion]" class="w-full border p-2 rounded mb-2">
+                <label class="block mb-1 font-semibold">Sección:</label>
+                <input type="text" name="comentarios[${contador}][seccion]" class="w-full border p-2 rounded mb-2">
 
-            <label class="block mb-1 font-semibold">Comentario:</label>
-            <textarea name="comentarios[${contador}][mensaje]" class="w-full border p-2 rounded" rows="3"></textarea>
-        `;
+                <label class="block mb-1 font-semibold">Comentario:</label>
+                <textarea name="comentarios[${contador}][mensaje]" class="w-full border p-2 rounded" rows="3"></textarea>
+            `;
             container.appendChild(nuevo);
             contador++;
         }

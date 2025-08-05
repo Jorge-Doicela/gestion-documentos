@@ -18,7 +18,6 @@ use App\Http\Controllers\Coordinador\CoordinadorDocumentoController;
 use App\Http\Controllers\Coordinador\CertificadoController as CoordinadorCertificadoController;
 use App\Http\Controllers\Estudiante\CertificadoController as EstudianteCertificadoController;
 
-
 // Página de bienvenida
 Route::get('/', function () {
     return view('welcome');
@@ -74,6 +73,7 @@ Route::prefix('tutor')
         Route::prefix('revision-documentos')->name('revision.')->group(function () {
             Route::get('/', [RevisionDocumentosController::class, 'index'])->name('index');
             Route::get('/{documento}', [RevisionDocumentosController::class, 'show'])->name('show');
+            Route::get('/{documento}/ver', [RevisionDocumentosController::class, 'verDocumento'])->name('ver');  // Nueva ruta para ver PDF
             Route::post('/{documento}/comentarios', [RevisionDocumentosController::class, 'guardarComentarios'])->name('comentarios');
             Route::post('/{documento}/aprobar', [RevisionDocumentosController::class, 'aprobar'])->name('aprobar');
             Route::post('/{documento}/rechazar', [RevisionDocumentosController::class, 'rechazar'])->name('rechazar');
@@ -101,7 +101,7 @@ Route::middleware(['auth', 'role:Estudiante'])
                 Route::get('/edit/{documento}', [DocumentoController::class, 'edit'])->name('edit');
                 Route::put('/update/{documento}', [DocumentoController::class, 'update'])->name('update');
                 Route::get('/show/{documento}', [DocumentoController::class, 'show'])->name('show');
-                Route::delete('/{documento}', [DocumentoController::class, 'destroy'])->name('destroy'); // 🔥 Nueva ruta agregada aquí
+                Route::delete('/{documento}', [DocumentoController::class, 'destroy'])->name('destroy');
             });
 
         Route::get('certificados/descargar/{uuid}', [EstudianteCertificadoController::class, 'descargar'])
@@ -111,10 +111,8 @@ Route::middleware(['auth', 'role:Estudiante'])
             ->name('documentos.download');
     });
 
-
-
-// Rutas exclusivas para el Administrador General
-Route::middleware(['auth', 'role:Administrador General'])
+// Rutas exclusivas para el Administrador General y Coordinador de Prácticas
+Route::middleware(['auth', 'role:Administrador General|Coordinador de Prácticas'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {

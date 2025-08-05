@@ -15,6 +15,7 @@ class CreateComentariosTable extends Migration
             $table->string('seccion');
             $table->text('mensaje');
             $table->enum('tipo', ['observacion', 'error', 'sugerencia']);
+            $table->enum('autor_rol', ['tutor', 'coordinador', 'estudiante']);
             $table->timestamps();
         });
     }

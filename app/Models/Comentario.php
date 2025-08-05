@@ -15,15 +15,16 @@ class Comentario extends Model
         'seccion',
         'mensaje',
         'tipo',
+        'autor_rol',
     ];
 
-    // Documento al que pertenece el comentario
+    // Relación con Documento
     public function documento()
     {
         return $this->belongsTo(Documento::class, 'documento_id');
     }
 
-    // Usuario que hizo el comentario
+    // Relación con Usuario
     public function usuario()
     {
         return $this->belongsTo(User::class, 'user_id');

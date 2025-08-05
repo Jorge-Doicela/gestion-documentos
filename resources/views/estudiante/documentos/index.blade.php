@@ -126,8 +126,8 @@
                             </td>
                             <td class="border border-gray-300 px-4 py-2">
                                 @if ($item['ruta_archivo'])
-                                    <a href="{{ Storage::url($item['ruta_archivo']) }}" target="_blank"
-                                        class="text-blue-600 underline">
+                                    <a href="{{ route('estudiante.documentos.download', $item['documento_id']) }}"
+                                        target="_blank" class="text-blue-600 underline">
                                         Ver PDF
                                     </a>
                                 @else

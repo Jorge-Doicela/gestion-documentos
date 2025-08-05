@@ -7,31 +7,57 @@ use App\Models\Comentario;
 use App\Models\LogActividad;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
 
 class RevisionDocumentosController extends Controller
 {
     public function index()
     {
+        // Ojo: Se usa "usuario" que es la relación definida en Documento
         $documentos = Documento::whereHas('usuario', function ($q) {
             $q->where('tutor_id', auth()->id());
-        })->where('estado', 'pendiente_tutor')->get();
+        })
+            ->whereIn('estado', ['pendiente_tutor', 'rechazado_coordinador'])
+            ->get();
 
         return view('tutor.revision_documentos.index', compact('documentos'));
     }
 
     public function show(Documento $documento)
     {
+        // Verifica que el tutor sea el asignado
         abort_unless($documento->usuario->tutor_id === auth()->id(), 403);
 
+        if (!in_array($documento->estado, ['pendiente_tutor', 'rechazado_coordinador'])) {
+            return redirect()->route('tutor.revision.index')
+                ->with('warning', 'El documento ya fue revisado anteriormente.');
+        }
+
         return view('tutor.revision_documentos.show', compact('documento'));
+    }
+
+    public function verDocumento(Documento $documento)
+    {
+        abort_unless($documento->usuario->tutor_id === auth()->id(), 403);
+
+        if (!Storage::disk('public')->exists($documento->ruta_archivo)) {
+            abort(404, 'Archivo no encontrado.');
+        }
+
+        $fileContent = Storage::disk('public')->get($documento->ruta_archivo);
+
+        return Response::make($fileContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $documento->nombre_archivo . '"'
+        ]);
     }
 
     public function aprobar(Request $request, Documento $documento)
     {
         abort_unless($documento->usuario->tutor_id === auth()->id(), 403);
 
-        // Validar que el estado sea pendiente para evitar cambios múltiples
-        if ($documento->estado !== 'pendiente_tutor') {
+        if (!in_array($documento->estado, ['pendiente_tutor', 'rechazado_coordinador'])) {
             return redirect()->route('tutor.revision.index')
                 ->with('warning', 'El documento ya fue revisado anteriormente.');
         }
@@ -55,23 +81,26 @@ class RevisionDocumentosController extends Controller
     {
         abort_unless($documento->usuario->tutor_id === auth()->id(), 403);
 
-        // Validar que el estado sea pendiente para evitar cambios múltiples
-        if ($documento->estado !== 'pendiente_tutor') {
+        if (!in_array($documento->estado, ['pendiente_tutor', 'rechazado_coordinador'])) {
             return redirect()->route('tutor.revision.index')
                 ->with('warning', 'El documento ya fue revisado anteriormente.');
         }
 
         $request->validate([
-            'comentarios' => 'required|string|max:2000',
+            'comentarios' => 'nullable|string|max:2000',
         ]);
 
-        Comentario::create([
-            'documento_id' => $documento->id,
-            'user_id' => auth()->id(),
-            'seccion' => 'General',
-            'mensaje' => $request->comentarios,
-            'tipo' => 'tutor',
-        ]);
+        // Guardar comentario solo si no está vacío
+        if (!empty(trim($request->comentarios))) {
+            Comentario::create([
+                'documento_id' => $documento->id,
+                'user_id' => auth()->id(),
+                'seccion' => 'General',
+                'mensaje' => $request->comentarios,
+                'tipo' => 'observacion',
+                'autor_rol' => 'tutor',
+            ]);
+        }
 
         $documento->estado = 'rechazado_tutor';
         $documento->fecha_revision = now();
@@ -85,7 +114,7 @@ class RevisionDocumentosController extends Controller
             'user_agent' => $request->userAgent(),
         ]);
 
-        return redirect()->route('tutor.revision.index')->with('error', 'Documento rechazado con observaciones.');
+        return redirect()->route('tutor.revision.index')->with('error', 'Documento rechazado correctamente.');
     }
 
     public function guardarComentarios(Request $request, Documento $documento)
@@ -104,7 +133,8 @@ class RevisionDocumentosController extends Controller
                 'user_id' => auth()->id(),
                 'seccion' => $comentario['seccion'],
                 'mensaje' => $comentario['mensaje'],
-                'tipo' => 'tutor',
+                'tipo' => 'observacion',
+                'autor_rol' => 'tutor',
             ]);
         }
 

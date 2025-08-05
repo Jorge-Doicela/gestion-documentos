@@ -18,7 +18,7 @@ class UsersSeeder extends Seeder
                 'password' => Hash::make('password123'),
             ]
         );
-        $admin->assignRole('Administrador');
+        $admin->assignRole('Administrador General');
 
         // Coordinador
         $coord = User::updateOrCreate(
@@ -28,7 +28,7 @@ class UsersSeeder extends Seeder
                 'password' => Hash::make('password123'),
             ]
         );
-        $coord->assignRole('Coordinador');
+        $coord->assignRole('Coordinador de Prácticas');
 
         // Tutor 1
         $tutor1 = User::updateOrCreate(
@@ -38,7 +38,7 @@ class UsersSeeder extends Seeder
                 'password' => Hash::make('password123'),
             ]
         );
-        $tutor1->assignRole('Tutor');
+        $tutor1->assignRole('Tutor Académico');
 
         // Tutor 2
         $tutor2 = User::updateOrCreate(
@@ -48,7 +48,7 @@ class UsersSeeder extends Seeder
                 'password' => Hash::make('password123'),
             ]
         );
-        $tutor2->assignRole('Tutor');
+        $tutor2->assignRole('Tutor Académico');
 
         // Estudiantes asignados a tutor1
         $est1 = User::updateOrCreate(

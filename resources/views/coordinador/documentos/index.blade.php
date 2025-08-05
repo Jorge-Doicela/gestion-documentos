@@ -22,7 +22,7 @@
                 <tbody>
                     @foreach ($documentos as $doc)
                         <tr class="border-b align-top">
-                            <td class="p-2">{{ $doc->estudiante->name }}</td>
+                            <td class="p-2">{{ $doc->usuario->name }}</td>
                             <td class="p-2">{{ $doc->tipoDocumento->nombre }}</td>
                             <td class="p-2">
                                 <a href="{{ asset('storage/' . $doc->ruta_archivo) }}" target="_blank"

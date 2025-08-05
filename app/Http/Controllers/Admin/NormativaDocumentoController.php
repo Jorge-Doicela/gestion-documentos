@@ -13,7 +13,7 @@ class NormativaDocumentoController extends Controller
     public function __construct()
     {
         // Middleware que asegura que solo usuarios con rol 'Administrador General' accedan
-        $this->middleware(['auth', 'role:Administrador General']);
+        $this->middleware(['auth', 'role:Administrador General|Coordinador de Prácticas']);
     }
 
     public function index()

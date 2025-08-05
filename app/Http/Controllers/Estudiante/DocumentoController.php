@@ -11,6 +11,7 @@ use App\Models\Documento;
 use App\Models\TipoDocumento;
 use App\Models\Configuracion;
 use App\Models\Certificado;
+use Illuminate\Support\Facades\Response;
 
 class DocumentoController extends Controller
 {
@@ -79,23 +80,27 @@ class DocumentoController extends Controller
         $nombreArchivo = Str::uuid() . '.' . $file->getClientOriginalExtension();
         $ruta = $rutaBase . '/' . $user->id . '/' . $nombreArchivo;
 
-        Storage::put($ruta, file_get_contents($file));
+        Storage::disk('public')->put($ruta, file_get_contents($file));
 
         Documento::create([
             'user_id' => $user->id,
             'tipo_documento_id' => $request->tipo_documento_id,
             'nombre_archivo' => $file->getClientOriginalName(),
             'ruta_archivo' => $ruta,
-            'estado' => 'pendiente',
+            'estado' => 'pendiente_tutor',   // ESTADO CORRECTO
             'comentarios_json' => null,
         ]);
+
 
         return redirect()->route('estudiante.documentos.index')->with('success', 'Documento subido correctamente.');
     }
 
     public function edit(Documento $documento)
     {
-        $this->authorize('update', $documento);
+        // Validación manual de propiedad
+        if ($documento->user_id !== auth()->id()) {
+            abort(403, 'No autorizado.');
+        }
 
         $tiposDocumento = TipoDocumento::orderBy('orden')->get();
         $tamanoMB = Configuracion::where('clave', 'tamano_maximo_documento')->value('valor') ?? 5;
@@ -105,7 +110,10 @@ class DocumentoController extends Controller
 
     public function update(Request $request, Documento $documento)
     {
-        $this->authorize('update', $documento);
+        // Validación manual de propiedad
+        if ($documento->user_id !== auth()->id()) {
+            abort(403, 'No autorizado.');
+        }
 
         $tamanoMB = Configuracion::where('clave', 'tamano_maximo_documento')->value('valor') ?? 5;
         $tamanoKB = $tamanoMB * 1024;
@@ -121,21 +129,25 @@ class DocumentoController extends Controller
         $rutaBase = Configuracion::where('clave', 'ruta_documentos')->value('valor') ?? 'documentos';
         $ruta = $rutaBase . '/' . $documento->user_id . '/' . Str::uuid() . '.' . $file->getClientOriginalExtension();
 
-        Storage::put($ruta, file_get_contents($file));
+        Storage::disk('public')->put($ruta, file_get_contents($file));
 
         $documento->update([
             'nombre_archivo' => $file->getClientOriginalName(),
             'ruta_archivo' => $ruta,
-            'estado' => 'pendiente',
+            'estado' => 'pendiente_tutor',   // ESTADO CORRECTO
             'comentarios_json' => null,
         ]);
+
 
         return redirect()->route('estudiante.documentos.index')->with('success', 'Documento actualizado y enviado para revisión.');
     }
 
     public function show(Documento $documento)
     {
-        $this->authorize('view', $documento);
+        // Validación manual de propiedad
+        if ($documento->user_id !== auth()->id()) {
+            abort(403, 'No autorizado.');
+        }
 
         $comentarios = $documento->comentarios()->with('usuario')->get();
 
@@ -144,10 +156,13 @@ class DocumentoController extends Controller
 
     public function destroy(Documento $documento)
     {
-        $this->authorize('delete', $documento);
+        // Validación manual de propiedad
+        if ($documento->user_id !== auth()->id()) {
+            abort(403, 'No autorizado.');
+        }
 
-        if (Storage::exists($documento->ruta_archivo)) {
-            Storage::delete($documento->ruta_archivo);
+        if (Storage::disk('public')->exists($documento->ruta_archivo)) {
+            Storage::disk('public')->delete($documento->ruta_archivo);
         }
 
         $documento->delete();
@@ -159,11 +174,16 @@ class DocumentoController extends Controller
     {
         $documento = Documento::where('user_id', Auth::id())->findOrFail($id);
 
-        if (!Storage::exists($documento->ruta_archivo)) {
+        if (!Storage::disk('public')->exists($documento->ruta_archivo)) {
             abort(404, 'Archivo no encontrado');
         }
 
-        return Storage::download($documento->ruta_archivo, $documento->nombre_archivo);
+        $fileContent = Storage::disk('public')->get($documento->ruta_archivo);
+
+        return Response::make($fileContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $documento->nombre_archivo . '"'
+        ]);
     }
 
     public function descargarCertificado($uuid)
@@ -172,10 +192,10 @@ class DocumentoController extends Controller
 
         $certificado = Certificado::where('user_id', $user->id)->where('uuid', $uuid)->firstOrFail();
 
-        if (!Storage::exists($certificado->ruta_pdf)) {
+        if (!Storage::disk('public')->exists($certificado->ruta_pdf)) {
             abort(404, 'Certificado no encontrado.');
         }
 
-        return Storage::download($certificado->ruta_pdf, "Certificado_{$user->name}.pdf");
+        return Storage::disk('public')->download($certificado->ruta_pdf, "Certificado_{$user->name}.pdf");
     }
 }

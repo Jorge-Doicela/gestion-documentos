@@ -32,8 +32,9 @@
                         </td>
                         <td class="border border-gray-300 px-4 py-2">{{ $doc->created_at->format('d/m/Y') }}</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <a href="{{ route('tutor.documentos.show', $doc->id) }}"
+                            <a href="{{ route('tutor.revision.show', $doc->id) }}"
                                 class="text-blue-600 hover:underline">Ver</a>
+
                         </td>
                     </tr>
                 @endforeach

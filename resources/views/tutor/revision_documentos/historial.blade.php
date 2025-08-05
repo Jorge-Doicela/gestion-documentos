@@ -104,10 +104,11 @@
                                 {{ optional($documento->fecha_revision)->format('d/m/Y H:i') }}
                             </td>
                             <td class="px-4 py-2">
-                                <a href="{{ route('tutor.revision_documentos.show', $documento->id) }}"
+                                <a href="{{ route('tutor.revision.show', $documento->id) }}"
                                     class="text-blue-600 hover:underline">
                                     Ver detalles
                                 </a>
+
                             </td>
                         </tr>
                     @empty

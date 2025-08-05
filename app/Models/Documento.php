@@ -9,7 +9,6 @@ class Documento extends Model
 {
     use HasFactory;
 
-    // Opcional si la tabla se llama "documentos"
     protected $table = 'documentos';
 
     protected $fillable = [
@@ -27,7 +26,7 @@ class Documento extends Model
         'fecha_revision' => 'datetime',
     ];
 
-    // Relación con usuario propietario
+    // Relación con usuario (estudiante que subió el documento)
     public function usuario()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -39,13 +38,12 @@ class Documento extends Model
         return $this->belongsTo(TipoDocumento::class, 'tipo_documento_id');
     }
 
-    // Relación con versiones anteriores
+    // Versiones y comentarios relacionados
     public function versiones()
     {
         return $this->hasMany(VersionDocumento::class, 'documento_id');
     }
 
-    // Relación con comentarios
     public function comentarios()
     {
         return $this->hasMany(Comentario::class, 'documento_id');

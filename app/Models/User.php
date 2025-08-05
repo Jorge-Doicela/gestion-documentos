@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'tutor_id', // <-- Agregado para permitir asignar tutor
     ];
 
     protected $hidden = [

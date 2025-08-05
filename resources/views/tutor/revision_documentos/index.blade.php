@@ -31,7 +31,7 @@
             @foreach ($documentos as $doc)
                 <div class="p-4 bg-white rounded shadow">
                     <h3 class="font-semibold">{{ $doc->tipoDocumento->nombre }}</h3>
-                    <p>Estudiante: {{ $doc->user->name }} ({{ $doc->user->email }})</p>
+                    <p>Estudiante: {{ $doc->usuario->name }} ({{ $doc->usuario->email }})</p>
                     <p>Subido el: {{ $doc->created_at->format('d/m/Y H:i') }}</p>
                     <a href="{{ route('tutor.revision.show', $doc->id) }}"
                         class="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
