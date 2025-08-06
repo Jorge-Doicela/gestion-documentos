@@ -23,6 +23,9 @@
                     <th class="py-3 px-6 text-left">Nombre</th>
                     <th class="py-3 px-6 text-left">Email</th>
                     <th class="py-3 px-6 text-left">Rol</th>
+                    <th class="py-3 px-6 text-left">Teléfono</th>
+                    <th class="py-3 px-6 text-left">Carrera</th>
+                    <th class="py-3 px-6 text-left">Tutor</th>
                     <th class="py-3 px-6 text-center">Acciones</th>
                 </tr>
             </thead>
@@ -32,6 +35,9 @@
                         <td class="py-3 px-6 text-left whitespace-nowrap">{{ $user->name }}</td>
                         <td class="py-3 px-6 text-left">{{ $user->email }}</td>
                         <td class="py-3 px-6 text-left">{{ $user->roles->pluck('name')->join(', ') }}</td>
+                        <td class="py-3 px-6 text-left">{{ $user->telefono ?? '-' }}</td>
+                        <td class="py-3 px-6 text-left">{{ $user->carrera->nombre ?? '-' }}</td>
+                        <td class="py-3 px-6 text-left">{{ $user->tutor->name ?? '-' }}</td>
                         <td class="py-3 px-6 text-center">
                             <a href="{{ route('admin.users.show', $user) }}"
                                 class="text-green-600 hover:text-green-900 mr-2">Ver</a>

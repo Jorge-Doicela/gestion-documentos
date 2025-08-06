@@ -8,23 +8,30 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Crear tabla users sin clave foránea en tutor_id
+        // Crear tabla users con todos los campos y claves foráneas
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
 
-            // Solo columna tutor_id, nullable
+            // Nuevos campos
+            $table->string('telefono')->nullable();
+            $table->string('direccion')->nullable();
+            $table->string('identificacion')->unique()->nullable();
+            $table->date('fecha_nacimiento')->nullable();
+            $table->enum('genero', ['Masculino', 'Femenino', 'Otro'])->nullable();
+
+            // Foreign keys
             $table->unsignedBigInteger('tutor_id')->nullable();
+            $table->foreignId('carrera_id')->nullable()->constrained('carreras')->nullOnDelete();
 
             $table->rememberToken();
             $table->timestamps();
-        });
 
-        // Agregar clave foránea auto-referencial en tutor_id
-        Schema::table('users', function (Blueprint $table) {
+            // Definir la FK auto-referencial tutor_id
             $table->foreign('tutor_id')
                 ->references('id')
                 ->on('users')
@@ -51,9 +58,10 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Eliminar clave foránea antes de borrar tabla users
+        // Para eliminar la tabla users debemos primero eliminar las FK
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['tutor_id']);
+            $table->dropForeign(['carrera_id']);
         });
 
         Schema::dropIfExists('users');

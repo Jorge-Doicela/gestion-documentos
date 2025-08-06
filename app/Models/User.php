@@ -22,7 +22,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'tutor_id', // <-- Agregado para permitir asignar tutor
+        'tutor_id',
+        'telefono',
+        'direccion',
+        'identificacion',
+        'fecha_nacimiento',
+        'genero',
+        'carrera_id',
     ];
 
     protected $hidden = [
@@ -80,5 +86,10 @@ class User extends Authenticatable
     public function tutor()
     {
         return $this->belongsTo(User::class, 'tutor_id');
+    }
+
+    public function carrera()
+    {
+        return $this->belongsTo(Carrera::class);
     }
 }

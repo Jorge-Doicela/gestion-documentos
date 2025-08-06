@@ -32,19 +32,9 @@
                 👥 Gestión de Usuarios
             </a>
 
-            <a href="{{ route('admin.tipos-documento.index') }}"
-                class="block bg-green-600 hover:bg-green-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center">
-                📄 Tipos de Documento
-            </a>
-
             <a href="{{ route('admin.configuraciones.index') }}"
                 class="block bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center">
                 ⚙️ Configuración Global del Sistema
-            </a>
-
-            <a href="{{ route('admin.normativas.index') }}"
-                class="block bg-teal-600 hover:bg-teal-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">
-                📚 Gestión de Normativas
             </a>
 
             <a href="{{ route('admin.logs.index') }}"
@@ -54,10 +44,11 @@
         @endrole
 
         @role('Coordinador de Prácticas')
-            <a href="{{ route('coordinador.dashboard') }}"
+            <a href="{{ route('admin.users.index') }}"
                 class="block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center">
                 📋 Panel Coordinador
             </a>
+
 
             <a href="{{ route('coordinador.documentos.aprobados') }}"
                 class="block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">

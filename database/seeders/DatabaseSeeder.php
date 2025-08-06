@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             ConfiguracionesSeeder::class,
             TiposDocumentoSeeder::class,
             NormativasDocumentoSeeder::class,
+            CarreraSeeder::class,
         ]);
     }
 }

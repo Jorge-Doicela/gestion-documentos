@@ -12,6 +12,15 @@
             <p><strong>Email:</strong> {{ $user->email }}</p>
             <p><strong>Roles:</strong> {{ $user->roles->pluck('name')->join(', ') }}</p>
 
+            <p><strong>Teléfono:</strong> {{ $user->telefono ?? '-' }}</p>
+            <p><strong>Dirección:</strong> {{ $user->direccion ?? '-' }}</p>
+            <p><strong>Identificación:</strong> {{ $user->identificacion ?? '-' }}</p>
+            <p><strong>Fecha de Nacimiento:</strong>
+                {{ $user->fecha_nacimiento ? $user->fecha_nacimiento->format('d/m/Y') : '-' }}</p>
+            <p><strong>Género:</strong> {{ $user->genero ?? '-' }}</p>
+            <p><strong>Carrera:</strong> {{ $user->carrera->nombre ?? '-' }}</p>
+            <p><strong>Tutor Asignado:</strong> {{ $user->tutor->name ?? '-' }}</p>
+
             <p><strong>Fecha de creación:</strong> {{ $user->created_at->format('d/m/Y H:i') }}</p>
             <p><strong>Última actualización:</strong> {{ $user->updated_at->format('d/m/Y H:i') }}</p>
         </div>

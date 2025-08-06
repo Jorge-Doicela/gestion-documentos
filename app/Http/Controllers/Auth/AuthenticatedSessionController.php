@@ -31,11 +31,11 @@ class AuthenticatedSessionController extends Controller
         $user = $request->user();
 
         if ($user->hasRole('Administrador General')) {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('dashboard');
         } elseif ($user->hasRole('Coordinador de Prácticas')) {
             return redirect()->route('coordinador.dashboard');
         } elseif ($user->hasRole('Tutor Académico')) {
-            return redirect()->route('tutor.dashboard');
+            return redirect()->route('dashboard');
         } elseif ($user->hasRole('Estudiante')) {
             return redirect()->route('estudiante.dashboard');
         }
