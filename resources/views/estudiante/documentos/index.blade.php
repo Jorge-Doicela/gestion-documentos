@@ -17,8 +17,6 @@
     <div class="max-w-6xl mx-auto p-4">
         <h1 class="text-2xl font-bold mb-6">📄 Mis Documentos de Prácticas</h1>
 
-        {{-- No botón general para subir, porque ahora se sube por tipo en la tabla --}}
-
         @if (session('success'))
             <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
                 {{ session('success') }}
@@ -32,8 +30,10 @@
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="border border-gray-300 px-4 py-2 text-left">Tipo de Documento</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left">Descripción</th>
                         <th class="border border-gray-300 px-4 py-2 text-left">Estado</th>
                         <th class="border border-gray-300 px-4 py-2 text-left">Comentarios</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left">Ejemplo</th>
                         <th class="border border-gray-300 px-4 py-2 text-left">Archivo</th>
                         <th class="border border-gray-300 px-4 py-2 text-left">Fecha de Revisión</th>
                         <th class="border border-gray-300 px-4 py-2 text-left">Acciones</th>
@@ -43,6 +43,11 @@
                     @foreach ($listaDocumentos as $item)
                         <tr class="hover:bg-gray-50">
                             <td class="border border-gray-300 px-4 py-2">{{ $item['tipo_documento']->nombre }}</td>
+
+                            <td class="border border-gray-300 px-4 py-2 text-sm text-gray-700">
+                                {{ $item['tipo_documento']->descripcion ?? '—' }}
+                            </td>
+
                             <td class="border border-gray-300 px-4 py-2">
                                 @switch($item['estado'])
                                     @case('pendiente')
@@ -69,6 +74,7 @@
                                         <span>{{ ucfirst($item['estado'] ?? 'Desconocido') }}</span>
                                 @endswitch
                             </td>
+
                             <td class="border border-gray-300 px-4 py-2 text-sm">
                                 @if ($item['comentarios']->isNotEmpty())
                                     @php
@@ -124,16 +130,36 @@
                                     <div class="text-sm text-gray-500 italic">No hay comentarios registrados.</div>
                                 @endif
                             </td>
+
                             <td class="border border-gray-300 px-4 py-2">
-                                @if ($item['ruta_archivo'])
-                                    <a href="{{ route('estudiante.documentos.download', $item['documento_id']) }}"
+                                @if ($item['tipo_documento']->archivo_ejemplo)
+                                    <a href="{{ asset('storage/' . $item['tipo_documento']->archivo_ejemplo) }}"
                                         target="_blank" class="text-blue-600 underline">
-                                        Ver PDF
+                                        Ver Ejemplo
                                     </a>
+                                @else
+                                    <span class="text-gray-400 italic">No disponible</span>
+                                @endif
+                            </td>
+
+                            <td class="border border-gray-300 px-4 py-2">
+                                @if ($item['ruta_archivo'] && $item['documento_id'])
+                                    <div class="flex flex-col space-y-1">
+                                        <a href="{{ route('estudiante.documentos.view', $item['documento_id']) }}"
+                                            target="_blank" class="text-blue-600 underline">
+                                            Ver Archivo
+                                        </a>
+
+                                        <a href="{{ route('estudiante.documentos.download', $item['documento_id']) }}"
+                                            class="text-green-600 underline">
+                                            Descargar
+                                        </a>
+                                    </div>
                                 @else
                                     <span class="text-gray-400">Sin archivo</span>
                                 @endif
                             </td>
+
                             <td class="border border-gray-300 px-4 py-2">
                                 {{ $item['fecha_revision'] ? \Carbon\Carbon::parse($item['fecha_revision'])->format('d/m/Y H:i') : 'Sin revisión' }}
                             </td>
@@ -148,7 +174,7 @@
                                     <div class="flex flex-col space-y-1 text-sm">
                                         <a href="{{ route('estudiante.documentos.show', $item['documento_id']) }}"
                                             class="text-blue-600 hover:underline">
-                                            Ver
+                                            Ver Detalle
                                         </a>
 
                                         <a href="{{ route('estudiante.documentos.edit', $item['documento_id']) }}"
@@ -167,8 +193,6 @@
                                     </div>
                                 @endif
                             </td>
-
-
                         </tr>
                     @endforeach
                 </tbody>

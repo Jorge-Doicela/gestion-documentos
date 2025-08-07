@@ -87,18 +87,18 @@ class DocumentoController extends Controller
             'tipo_documento_id' => $request->tipo_documento_id,
             'nombre_archivo' => $file->getClientOriginalName(),
             'ruta_archivo' => $ruta,
-            'estado' => 'pendiente_tutor',   // ESTADO CORRECTO
+            'estado' => 'pendiente_tutor',
             'comentarios_json' => null,
         ]);
-
 
         return redirect()->route('estudiante.documentos.index')->with('success', 'Documento subido correctamente.');
     }
 
     public function edit(Documento $documento)
     {
-        // Validación manual de propiedad
-        if ($documento->user_id !== auth()->id()) {
+        $user = auth()->user();
+
+        if ($documento->user_id !== $user->id && !$user->hasRole('coordinador')) {
             abort(403, 'No autorizado.');
         }
 
@@ -110,8 +110,9 @@ class DocumentoController extends Controller
 
     public function update(Request $request, Documento $documento)
     {
-        // Validación manual de propiedad
-        if ($documento->user_id !== auth()->id()) {
+        $user = auth()->user();
+
+        if ($documento->user_id !== $user->id && !$user->hasRole('coordinador')) {
             abort(403, 'No autorizado.');
         }
 
@@ -134,18 +135,18 @@ class DocumentoController extends Controller
         $documento->update([
             'nombre_archivo' => $file->getClientOriginalName(),
             'ruta_archivo' => $ruta,
-            'estado' => 'pendiente_tutor',   // ESTADO CORRECTO
+            'estado' => 'pendiente_tutor',
             'comentarios_json' => null,
         ]);
-
 
         return redirect()->route('estudiante.documentos.index')->with('success', 'Documento actualizado y enviado para revisión.');
     }
 
     public function show(Documento $documento)
     {
-        // Validación manual de propiedad
-        if ($documento->user_id !== auth()->id()) {
+        $user = auth()->user();
+
+        if ($documento->user_id !== $user->id && !$user->hasRole('coordinador')) {
             abort(403, 'No autorizado.');
         }
 
@@ -156,8 +157,9 @@ class DocumentoController extends Controller
 
     public function destroy(Documento $documento)
     {
-        // Validación manual de propiedad
-        if ($documento->user_id !== auth()->id()) {
+        $user = auth()->user();
+
+        if ($documento->user_id !== $user->id && !$user->hasRole('coordinador')) {
             abort(403, 'No autorizado.');
         }
 
@@ -170,9 +172,13 @@ class DocumentoController extends Controller
         return redirect()->route('estudiante.documentos.index')->with('success', 'Documento eliminado correctamente.');
     }
 
-    public function download($id)
+    public function view(Documento $documento)
     {
-        $documento = Documento::where('user_id', Auth::id())->findOrFail($id);
+        $user = auth()->user();
+
+        if ($documento->user_id !== $user->id && !$user->hasRole('coordinador')) {
+            abort(403, 'No autorizado.');
+        }
 
         if (!Storage::disk('public')->exists($documento->ruta_archivo)) {
             abort(404, 'Archivo no encontrado');
@@ -180,10 +186,24 @@ class DocumentoController extends Controller
 
         $fileContent = Storage::disk('public')->get($documento->ruta_archivo);
 
-        return Response::make($fileContent, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . $documento->nombre_archivo . '"'
-        ]);
+        return response($fileContent, 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="' . $documento->nombre_archivo . '"');
+    }
+
+    public function download(Documento $documento)
+    {
+        $user = auth()->user();
+
+        if ($documento->user_id !== $user->id && !$user->hasRole('coordinador')) {
+            abort(403, 'No autorizado.');
+        }
+
+        if (!Storage::disk('public')->exists($documento->ruta_archivo)) {
+            abort(404, 'Archivo no encontrado');
+        }
+
+        return Storage::disk('public')->download($documento->ruta_archivo, $documento->nombre_archivo);
     }
 
     public function descargarCertificado($uuid)

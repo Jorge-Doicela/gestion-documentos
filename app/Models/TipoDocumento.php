@@ -15,7 +15,8 @@ class TipoDocumento extends Model
         'nombre',
         'descripcion',
         'obligatorio',
-        'orden'
+        'orden',
+        'archivo_ejemplo', // <--- Añadido
     ];
 
     protected $casts = [

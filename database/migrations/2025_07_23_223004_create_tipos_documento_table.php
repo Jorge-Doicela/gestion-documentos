@@ -12,6 +12,7 @@ class CreateTiposDocumentoTable extends Migration
             $table->id();
             $table->string('nombre');
             $table->text('descripcion')->nullable();
+            $table->string('archivo_ejemplo')->nullable(); // ← aquí agregas la nueva columna
             $table->boolean('obligatorio')->default(false);
             $table->integer('orden')->default(0);
             $table->timestamps();

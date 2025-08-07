@@ -34,6 +34,14 @@
 
         <!-- Contenido principal -->
         <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+            <!-- Mostrar mensaje de error si existe -->
+            @if (session('error'))
+                <div class="mb-4 p-4 bg-red-100 text-red-800 rounded">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             @yield('content')
         </main>
 

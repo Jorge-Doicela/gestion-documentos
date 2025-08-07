@@ -100,13 +100,17 @@ Route::middleware(['auth', 'role:Estudiante'])
                 Route::put('/update/{documento}', [DocumentoController::class, 'update'])->name('update');
                 Route::get('/show/{documento}', [DocumentoController::class, 'show'])->name('show');
                 Route::delete('/{documento}', [DocumentoController::class, 'destroy'])->name('destroy');
+
+                // Ver documento PDF inline
+                Route::get('/{documento}/view', [DocumentoController::class, 'view'])->name('view');
+
+                // Descargar documento PDF
+                Route::get('/{documento}/download', [DocumentoController::class, 'download'])->name('download');
             });
 
+        // Descargar certificado PDF por UUID
         Route::get('certificados/descargar/{uuid}', [EstudianteCertificadoController::class, 'descargar'])
             ->name('certificados.descargar');
-
-        Route::get('documentos/{documento}/download', [DocumentoController::class, 'download'])
-            ->name('documentos.download');
     });
 
 // Rutas para Admin (Administrador General y Coordinador de Prácticas)
@@ -117,6 +121,14 @@ Route::middleware(['auth', 'role:Administrador General|Coordinador de Prácticas
         Route::resource('users', UserController::class);
 
         Route::resource('tipos-documento', TipoDocumentoController::class);
+
+        // Ruta para descargar archivo de tipo documento
+        Route::get('tipos-documento/{tipo}/download', [TipoDocumentoController::class, 'download'])
+            ->name('tipos-documento.download');
+
+        // Ruta para ver archivo de tipo documento inline
+        Route::get('tipos-documento/{tipo}/view', [TipoDocumentoController::class, 'view'])
+            ->name('tipos-documento.view');
 
         // Rutas explícitas para Configuraciones (incluye destroy)
         Route::prefix('configuraciones')
