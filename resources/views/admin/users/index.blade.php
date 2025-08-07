@@ -12,11 +12,53 @@
             </div>
         @endif
 
+        {{-- Formulario de Filtros --}}
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <form method="GET" action="{{ route('admin.users.index') }}" class="flex flex-wrap gap-2 items-center"
+                id="filter-form">
+                <input type="text" name="search" placeholder="Buscar nombre o email" value="{{ request('search') }}"
+                    class="border rounded px-3 py-1" />
+
+                <select name="role" id="role-filter" class="border rounded px-3 py-1">
+                    <option value="">Todos los roles</option>
+                    @foreach ($roles as $role)
+                        <option value="{{ $role }}" @selected(request('role') == $role)>{{ $role }}</option>
+                    @endforeach
+                </select>
+
+                <div id="carrera-filter-container" class="hidden">
+                    <select name="carrera_id" class="border rounded px-3 py-1">
+                        <option value="">Todas las carreras</option>
+                        @foreach ($carreras as $id => $nombre)
+                            <option value="{{ $id }}" @selected(request('carrera_id') == $id)>{{ $nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div id="tutor-filter-container" class="hidden">
+                    <select name="tutor_id" class="border rounded px-3 py-1">
+                        <option value="">Todos los tutores</option>
+                        @foreach ($tutores as $id => $nombre)
+                            <option value="{{ $id }}" @selected(request('tutor_id') == $id)>{{ $nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <button type="submit" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">Filtrar</button>
+                <a href="{{ route('admin.users.index') }}"
+                    class="ml-2 px-4 py-1 bg-gray-300 rounded hover:bg-gray-400">Limpiar</a>
+            </form>
+
+
+        </div>
+
+        {{-- Botón de Nuevo Usuario --}}
         <div class="mb-4">
             <a href="{{ route('admin.users.create') }}"
                 class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Nuevo Usuario</a>
         </div>
 
+        {{-- Tabla de usuarios --}}
         <table class="min-w-full bg-white rounded shadow overflow-hidden">
             <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                 <tr>
@@ -55,8 +97,52 @@
             </tbody>
         </table>
 
+        {{-- Paginación --}}
         <div class="mt-4">
-            {{ $users->links() }}
+            {{ $users->withQueryString()->links() }}
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const roleSelect = document.getElementById('role-filter');
+            const carreraContainer = document.getElementById('carrera-filter-container');
+            const tutorContainer = document.getElementById('tutor-filter-container');
+
+            function toggleFilterFields() {
+                const selectedRole = roleSelect.value;
+
+                // Roles con carrera
+                const rolesConCarrera = [
+                    'Coordinador de Prácticas',
+                    'Tutor Académico',
+                    'Estudiante'
+                ];
+
+                // Roles con tutor
+                const rolesConTutor = [
+                    'Estudiante'
+                ];
+
+                if (rolesConCarrera.includes(selectedRole)) {
+                    carreraContainer.classList.remove('hidden');
+                } else {
+                    carreraContainer.classList.add('hidden');
+                }
+
+                if (rolesConTutor.includes(selectedRole)) {
+                    tutorContainer.classList.remove('hidden');
+                } else {
+                    tutorContainer.classList.add('hidden');
+                }
+            }
+
+            roleSelect.addEventListener('change', toggleFilterFields);
+
+            // Ejecutar al cargar para respetar valor actual
+            toggleFilterFields();
+        });
+    </script>
+@endpush

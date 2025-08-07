@@ -73,15 +73,14 @@ Route::prefix('tutor')
         Route::prefix('revision-documentos')->name('revision.')->group(function () {
             Route::get('/', [RevisionDocumentosController::class, 'index'])->name('index');
             Route::get('/{documento}', [RevisionDocumentosController::class, 'show'])->name('show');
-            Route::get('/{documento}/ver', [RevisionDocumentosController::class, 'verDocumento'])->name('ver');  // Nueva ruta para ver PDF
+            Route::get('/{documento}/ver', [RevisionDocumentosController::class, 'verDocumento'])->name('ver');
             Route::post('/{documento}/comentarios', [RevisionDocumentosController::class, 'guardarComentarios'])->name('comentarios');
             Route::post('/{documento}/aprobar', [RevisionDocumentosController::class, 'aprobar'])->name('aprobar');
             Route::post('/{documento}/rechazar', [RevisionDocumentosController::class, 'rechazar'])->name('rechazar');
         });
 
         // Historial de revisión
-        Route::get('/historial-revision', [RevisionHistorialController::class, 'index'])
-            ->name('historial.index');
+        Route::get('/historial-revision', [RevisionHistorialController::class, 'index'])->name('historial.index');
     });
 
 // Rutas para el Estudiante
@@ -91,7 +90,6 @@ Route::middleware(['auth', 'role:Estudiante'])
     ->group(function () {
         Route::view('/', 'dashboard')->name('dashboard');
 
-        // Rutas personalizadas para gestión de documentos
         Route::prefix('documentos')
             ->name('documentos.')
             ->group(function () {
@@ -111,19 +109,29 @@ Route::middleware(['auth', 'role:Estudiante'])
             ->name('documentos.download');
     });
 
-// Rutas exclusivas para el Administrador General y Coordinador de Prácticas
+// Rutas para Admin (Administrador General y Coordinador de Prácticas)
 Route::middleware(['auth', 'role:Administrador General|Coordinador de Prácticas'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
         Route::resource('users', UserController::class);
+
         Route::resource('tipos-documento', TipoDocumentoController::class);
-        Route::resource('configuraciones', ConfiguracionController::class)
-            ->parameters(['configuraciones' => 'configuracion'])
-            ->only(['index', 'edit', 'update']);
+
+        // Rutas explícitas para Configuraciones (incluye destroy)
+        Route::prefix('configuraciones')
+            ->name('configuraciones.')
+            ->group(function () {
+                Route::get('/', [ConfiguracionController::class, 'index'])->name('index');
+                Route::get('/create', [ConfiguracionController::class, 'create'])->name('create');
+                Route::post('/', [ConfiguracionController::class, 'store'])->name('store');
+                Route::get('/{configuracion}/edit', [ConfiguracionController::class, 'edit'])->name('edit');
+                Route::put('/{configuracion}', [ConfiguracionController::class, 'update'])->name('update');
+                Route::delete('/{configuracion}', [ConfiguracionController::class, 'destroy'])->name('destroy');
+            });
+
         Route::resource('normativas', NormativaDocumentoController::class);
 
-        // Logs de actividad (dos rutas con alias diferente)
         Route::get('logs-actividad', [LogActividadController::class, 'index'])->name('logs_actividad.index');
         Route::get('logs', [LogActividadController::class, 'index'])->name('logs.index');
     });

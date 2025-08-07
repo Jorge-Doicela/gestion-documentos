@@ -12,6 +12,9 @@
     <link rel="preconnect" href="https://fonts.bunny.net" />
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+    <!-- Parsley.js CSS (opcional si quieres estilos por defecto) -->
+    <link href="https://cdn.jsdelivr.net/npm/parsleyjs/src/parsley.css" rel="stylesheet" />
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -42,6 +45,13 @@
             </div>
         </footer>
     </div>
+
+    <!-- Parsley.js JS -->
+    <script src="https://cdn.jsdelivr.net/npm/parsleyjs"></script>
+
+    @stack('scripts')
+    <script src="//unpkg.com/alpinejs" defer></script>
+
 </body>
 
 </html>
