@@ -7,20 +7,30 @@ use App\Models\NormativaDocumento;
 use App\Models\TipoDocumento;
 use Illuminate\Http\Request;
 
-
 class NormativaDocumentoController extends Controller
 {
     public function __construct()
     {
-        // Middleware que asegura que solo usuarios con rol 'Administrador General' accedan
         $this->middleware(['auth', 'role:Administrador General|Coordinador de Prácticas']);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $normativas = NormativaDocumento::with('tipoDocumento')->paginate(10);
-        return view('admin.normativas.index', compact('normativas'));
+        $search = $request->input('search');
+
+        $normativas = NormativaDocumento::with('tipoDocumento')
+            ->when($search, function ($query, $search) {
+                $query->whereHas('tipoDocumento', function ($q) use ($search) {
+                    $q->where('nombre', 'like', "%{$search}%");
+                })
+                    ->orWhere('contenido', 'like', "%{$search}%");
+            })
+            ->paginate(10)
+            ->appends(['search' => $search]);
+
+        return view('admin.normativas.index', compact('normativas', 'search'));
     }
+
 
     public function create()
     {
