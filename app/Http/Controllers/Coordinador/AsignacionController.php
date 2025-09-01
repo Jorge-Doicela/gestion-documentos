@@ -3,48 +3,69 @@
 namespace App\Http\Controllers\Coordinador;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\SolicitudPlaza;
 use App\Models\Asignacion;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Plaza;
+use App\Models\User;
+use App\Models\PlanTrabajo;
+use Illuminate\Http\Request;
 
 class AsignacionController extends Controller
 {
-    // Listado de solicitudes pendientes
     public function index()
     {
-        $solicitudes = SolicitudPlaza::with(['estudiante', 'plaza.empresa'])
-            ->where('estado', 'pendiente')
-            ->get();
-
-        return view('coordinador.solicitudes.index', compact('solicitudes'));
+        $asignaciones = Asignacion::with('plaza', 'estudiante', 'supervisor')->paginate(10);
+        return view('coordinador.asignaciones.index', compact('asignaciones'));
     }
 
-    // Asignar estudiante a plaza
-    public function asignar(Request $request, SolicitudPlaza $solicitud)
+    public function create()
     {
-        // Crear asignación
-        $asignacion = Asignacion::create([
-            'estudiante_id' => $solicitud->estudiante_id,
-            'plaza_id' => $solicitud->plaza_id,
-            'coordinador_id' => Auth::id(),
-            'fecha_asignacion' => now(),
+        $plazas = Plaza::with('empresa')->where('vacantes', '>', 0)->get();
+        $estudiantes = User::role('Estudiante')->get();
+        $supervisores = User::role('Tutor Académico')->get();
+        return view('coordinador.asignaciones.create', compact('plazas', 'estudiantes', 'supervisores'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'plaza_id' => 'required|exists:plazas,id',
+            'estudiante_id' => 'required|exists:users,id',
+            'supervisor_id' => 'nullable|exists:users,id',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+            'objetivos' => 'nullable|string',
+            'actividades' => 'nullable|string',
         ]);
 
-        // Cambiar estado de solicitud
-        $solicitud->estado = 'asignado';
-        $solicitud->save();
+        $asignacion = Asignacion::create([
+            'plaza_id' => $request->plaza_id,
+            'estudiante_id' => $request->estudiante_id,
+            'supervisor_id' => $request->supervisor_id,
+        ]);
 
-        return redirect()->route('solicitudes.index')->with('success', 'Estudiante asignado correctamente.');
+        // Generar plan de trabajo inicial
+        PlanTrabajo::create([
+            'asignacion_id' => $asignacion->id,
+            'objetivos' => $request->objetivos,
+            'actividades' => $request->actividades,
+            'fecha_inicio' => $request->fecha_inicio,
+            'fecha_fin' => $request->fecha_fin,
+        ]);
+
+        return redirect()->route('coordinador.asignaciones.index')
+            ->with('success', 'Estudiante asignado correctamente con plan de trabajo.');
     }
 
-    // Rechazar solicitud
-    public function rechazar(SolicitudPlaza $solicitud)
+    public function show(Asignacion $asignacion)
     {
-        $solicitud->estado = 'rechazada';
-        $solicitud->save();
+        $asignacion->load('plaza', 'estudiante', 'supervisor', 'planTrabajo');
+        return view('coordinador.asignaciones.show', compact('asignacion'));
+    }
 
-        return redirect()->route('solicitudes.index')->with('success', 'Solicitud rechazada.');
+    public function destroy(Asignacion $asignacion)
+    {
+        $asignacion->delete();
+        return redirect()->route('coordinador.asignaciones.index')
+            ->with('success', 'Asignación eliminada correctamente.');
     }
 }

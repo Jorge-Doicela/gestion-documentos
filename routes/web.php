@@ -8,22 +8,20 @@ use App\Http\Controllers\Admin\ConfiguracionController;
 use App\Http\Controllers\Admin\NormativaDocumentoController;
 use App\Http\Controllers\NormativaPublicController;
 use App\Http\Controllers\Admin\LogActividadController;
-use App\Http\Controllers\Tutor\DashboardController;
-use App\Http\Controllers\Tutor\TutorEstudianteController;
-use App\Http\Controllers\Coordinador\CoordinadorController;
-use App\Http\Controllers\Estudiante\DocumentoController;
-use App\Http\Controllers\Tutor\RevisionDocumentosController;
-use App\Http\Controllers\Tutor\RevisionHistorialController;
-use App\Http\Controllers\Coordinador\CoordinadorDocumentoController;
-use App\Http\Controllers\Coordinador\CertificadoController as CoordinadorCertificadoController;
-use App\Http\Controllers\Estudiante\CertificadoController as EstudianteCertificadoController;
-
-// NUEVAS IMPORTACIONES
 use App\Http\Controllers\Admin\EmpresaController;
 use App\Http\Controllers\Admin\PlazaController;
 use App\Http\Controllers\Admin\ConvenioController;
-use App\Http\Controllers\Estudiante\SolicitudPlazaController;
+use App\Http\Controllers\Tutor\DashboardController;
+use App\Http\Controllers\Tutor\TutorEstudianteController;
+use App\Http\Controllers\Tutor\RevisionDocumentosController;
+use App\Http\Controllers\Tutor\RevisionHistorialController;
+use App\Http\Controllers\Coordinador\CoordinadorController;
+use App\Http\Controllers\Coordinador\CoordinadorDocumentoController;
+use App\Http\Controllers\Coordinador\CertificadoController as CoordinadorCertificadoController;
 use App\Http\Controllers\Coordinador\AsignacionController;
+use App\Http\Controllers\Estudiante\DocumentoController;
+use App\Http\Controllers\Estudiante\CertificadoController as EstudianteCertificadoController;
+use App\Http\Controllers\Estudiante\SolicitudPlazaController;
 
 // ---------------------------------------------
 // Página de bienvenida
@@ -60,7 +58,6 @@ Route::prefix('coordinador')
     ->middleware(['auth', 'role:Coordinador de Prácticas'])
     ->name('coordinador.')
     ->group(function () {
-
         Route::get('/', [CoordinadorController::class, 'index'])->name('dashboard');
 
         // Revisión de documentos aprobados por tutor
@@ -69,6 +66,19 @@ Route::prefix('coordinador')
 
         // Generar certificado oficial PDF
         Route::post('/certificados/generar/{user}', [CoordinadorCertificadoController::class, 'generar'])->name('certificados.generar');
+
+        // Gestión de solicitudes de plazas
+        Route::get('/solicitudes', [SolicitudPlazaController::class, 'index'])->name('solicitudes.index');
+        Route::post('/solicitudes/aprobar/{id}', [SolicitudPlazaController::class, 'aprobar'])->name('solicitudes.aprobar');
+
+        // ------------------------
+        // Asignación de estudiantes y plan de trabajo
+        // ------------------------
+        Route::get('/asignaciones', [AsignacionController::class, 'index'])->name('asignaciones.index');
+        Route::get('/asignaciones/create', [AsignacionController::class, 'create'])->name('asignaciones.create');
+        Route::post('/asignaciones/store', [AsignacionController::class, 'store'])->name('asignaciones.store');
+        Route::get('/asignaciones/{asignacion}', [AsignacionController::class, 'show'])->name('asignaciones.show');
+        Route::delete('/asignaciones/{asignacion}', [AsignacionController::class, 'destroy'])->name('asignaciones.destroy');
     });
 
 // ---------------------------------------------
@@ -124,10 +134,6 @@ Route::prefix('estudiante')
 
         // Descargar certificado PDF
         Route::get('certificados/descargar/{uuid}', [EstudianteCertificadoController::class, 'descargar'])->name('certificados.descargar');
-
-        // Formulario y envío de solicitud de plaza
-        Route::get('plazas/{plaza}/postular', [SolicitudPlazaController::class, 'create'])->name('solicitud.create');
-        Route::post('plazas/{plaza}/postular', [SolicitudPlazaController::class, 'store'])->name('solicitud.store');
     });
 
 // ---------------------------------------------
@@ -175,18 +181,11 @@ Route::prefix('admin')
 Route::get('/normativas', [NormativaPublicController::class, 'index'])->name('normativas.index');
 
 // ---------------------------------------------
-// Rutas Coordinador - Gestión de asignaciones de plazas
-// ---------------------------------------------
-Route::middleware(['auth', 'role:Coordinador'])->group(function () {
-    Route::get('coordinador/solicitudes', [AsignacionController::class, 'index'])->name('solicitudes.index');
-    Route::post('coordinador/asignar/{solicitud}', [AsignacionController::class, 'asignar'])->name('solicitudes.asignar');
-    Route::post('coordinador/rechazar/{solicitud}', [AsignacionController::class, 'rechazar'])->name('solicitudes.rechazar');
-});
-
-// ---------------------------------------------
 // Autenticación Breeze
 // ---------------------------------------------
 require __DIR__ . '/auth.php';
 
+// ---------------------------------------------
 // Redirección /home
+// ---------------------------------------------
 Route::get('/home', fn() => redirect()->route('dashboard'))->name('home');

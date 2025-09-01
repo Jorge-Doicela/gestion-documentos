@@ -9,28 +9,28 @@ class Asignacion extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'estudiante_id',
-        'plaza_id',
-        'coordinador_id',
-        'fecha_asignacion',
-        'estado',
-        'plan_trabajo'
-    ];
+    // Aquí le decimos a Laravel cuál es la tabla real
+    protected $table = 'asignaciones';
 
-    // Relaciones
-    public function estudiante()
-    {
-        return $this->belongsTo(User::class, 'estudiante_id');
-    }
+    protected $fillable = ['plaza_id', 'estudiante_id', 'supervisor_id', 'estado'];
 
     public function plaza()
     {
         return $this->belongsTo(Plaza::class);
     }
 
-    public function coordinador()
+    public function estudiante()
     {
-        return $this->belongsTo(User::class, 'coordinador_id');
+        return $this->belongsTo(User::class, 'estudiante_id');
+    }
+
+    public function supervisor()
+    {
+        return $this->belongsTo(User::class, 'supervisor_id');
+    }
+
+    public function planTrabajo()
+    {
+        return $this->hasOne(PlanTrabajo::class);
     }
 }

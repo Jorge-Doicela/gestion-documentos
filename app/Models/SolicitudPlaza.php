@@ -9,26 +9,26 @@ class SolicitudPlaza extends Model
 {
     use HasFactory;
 
-    // Especificar la tabla
-    protected $table = 'solicitudes_plaza';
-
-    // Campos rellenables
     protected $fillable = [
-        'estudiante_id',
         'plaza_id',
+        'estudiante_id',
+        'cv_ruta',
         'estado',
-        'documentos'
+        'observaciones'
     ];
 
-    // Relación con estudiante
+    public function plaza()
+    {
+        return $this->belongsTo(Plaza::class);
+    }
+
     public function estudiante()
     {
         return $this->belongsTo(User::class, 'estudiante_id');
     }
 
-    // Relación con plaza
-    public function plaza()
+    public function planTrabajo()
     {
-        return $this->belongsTo(Plaza::class);
+        return $this->hasOne(PlanTrabajo::class, 'solicitud_id');
     }
 }

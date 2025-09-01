@@ -70,7 +70,7 @@
             </a>
         @endrole
 
-        {{-- Bloque Coordinador de Prácticas (con los mismos botones que el Administrador) --}}
+        {{-- Bloque Coordinador de Prácticas --}}
         @role('Coordinador de Prácticas')
             <a href="{{ route('admin.users.index') }}"
                 class="block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center">
@@ -111,6 +111,11 @@
                 class="block bg-teal-600 hover:bg-teal-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">
                 📚 Gestión de Normativas
             </a>
+
+            <a href="{{ route('coordinador.asignaciones.index') }}"
+                class="block bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">
+                🧩 Asignaciones de Estudiantes
+            </a>
         @endrole
 
         {{-- Bloque Tutor Académico --}}
@@ -148,11 +153,12 @@
                 📄 Mis Documentos y Estados
             </a>
 
-            <a href="{{ route('estudiante.solicitud.create', ['plaza' => 0]) }}"
-                class="block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">
-                💼 Postular a Plazas
+            <a href="{{ route('estudiante.plazas.disponibles') }}"
+                class="block bg-green-600 hover:bg-green-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">
+                💼 Plazas Disponibles
             </a>
 
+            {{-- Nota: plazaId se asigna dinámicamente en la vista de plazas --}}
             <a href="{{ route('normativas.index') }}"
                 class="block bg-teal-600 hover:bg-teal-700 text-white font-semibold py-6 px-6 rounded-xl shadow text-center mt-4">
                 📚 Ver Normativas
