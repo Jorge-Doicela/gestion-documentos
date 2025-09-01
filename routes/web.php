@@ -21,7 +21,6 @@ use App\Http\Controllers\Coordinador\CertificadoController as CoordinadorCertifi
 use App\Http\Controllers\Coordinador\AsignacionController;
 use App\Http\Controllers\Estudiante\DocumentoController;
 use App\Http\Controllers\Estudiante\CertificadoController as EstudianteCertificadoController;
-use App\Http\Controllers\Estudiante\SolicitudPlazaController;
 
 // ---------------------------------------------
 // Página de bienvenida
@@ -66,10 +65,6 @@ Route::prefix('coordinador')
 
         // Generar certificado oficial PDF
         Route::post('/certificados/generar/{user}', [CoordinadorCertificadoController::class, 'generar'])->name('certificados.generar');
-
-        // Gestión de solicitudes de plazas
-        Route::get('/solicitudes', [SolicitudPlazaController::class, 'index'])->name('solicitudes.index');
-        Route::post('/solicitudes/aprobar/{id}', [SolicitudPlazaController::class, 'aprobar'])->name('solicitudes.aprobar');
 
         // ------------------------
         // Asignación de estudiantes y plan de trabajo
