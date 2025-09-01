@@ -24,14 +24,14 @@
 
     <h1 class="text-2xl font-bold mb-6">🔍 Revisión del Documento</h1>
 
-    <embed src="{{ Storage::url($documento->ruta_archivo) }}" type="application/pdf" width="100%" height="600px" />
+    {{-- Embed PDF usando ruta del controlador --}}
+    <embed src="{{ route('tutor.revision.ver', $documento->id) }}" type="application/pdf" width="100%" height="600px" />
 
     {{-- Comentarios por sección --}}
     <h2 class="text-xl font-semibold mt-6 mb-2">🗂 Comentarios por sección</h2>
 
     <form method="POST" action="{{ route('tutor.revision.comentarios', $documento->id) }}">
         @csrf
-
         <div id="comentarios-container">
             <div class="mb-4 comentario-item">
                 <label class="block mb-1 font-semibold">Sección:</label>
@@ -52,14 +52,13 @@
         </button>
     </form>
 
-    {{-- Mostrar comentarios guardados --}}
+    {{-- Comentarios guardados --}}
     @if ($documento->comentarios->isNotEmpty())
         <h3 class="text-lg font-bold mt-6 mb-2">💬 Comentarios guardados:</h3>
         <ul class="space-y-2">
             @foreach ($documento->comentarios as $comentario)
                 <li class="border p-3 rounded bg-gray-50">
-                    <strong>{{ $comentario->seccion }}:</strong> {{ $comentario->mensaje }}
-                    <br>
+                    <strong>{{ $comentario->seccion }}:</strong> {{ $comentario->mensaje }}<br>
                     <span class="text-sm text-gray-500">
                         por {{ $comentario->usuario->name }} ({{ ucfirst($comentario->autor_rol) }}) -
                         {{ $comentario->created_at->format('d/m/Y H:i') }}
@@ -100,12 +99,12 @@
             const nuevo = document.createElement('div');
             nuevo.classList.add('mb-4', 'comentario-item');
             nuevo.innerHTML = `
-                <label class="block mb-1 font-semibold">Sección:</label>
-                <input type="text" name="comentarios[${contador}][seccion]" class="w-full border p-2 rounded mb-2">
+            <label class="block mb-1 font-semibold">Sección:</label>
+            <input type="text" name="comentarios[${contador}][seccion]" class="w-full border p-2 rounded mb-2">
 
-                <label class="block mb-1 font-semibold">Comentario:</label>
-                <textarea name="comentarios[${contador}][mensaje]" class="w-full border p-2 rounded" rows="3"></textarea>
-            `;
+            <label class="block mb-1 font-semibold">Comentario:</label>
+            <textarea name="comentarios[${contador}][mensaje]" class="w-full border p-2 rounded" rows="3"></textarea>
+        `;
             container.appendChild(nuevo);
             contador++;
         }

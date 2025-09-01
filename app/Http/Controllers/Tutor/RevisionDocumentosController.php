@@ -14,7 +14,6 @@ class RevisionDocumentosController extends Controller
 {
     public function index()
     {
-        // Ojo: Se usa "usuario" que es la relación definida en Documento
         $documentos = Documento::whereHas('usuario', function ($q) {
             $q->where('tutor_id', auth()->id());
         })
@@ -26,7 +25,6 @@ class RevisionDocumentosController extends Controller
 
     public function show(Documento $documento)
     {
-        // Verifica que el tutor sea el asignado
         abort_unless($documento->usuario->tutor_id === auth()->id(), 403);
 
         if (!in_array($documento->estado, ['pendiente_tutor', 'rechazado_coordinador'])) {
@@ -90,7 +88,6 @@ class RevisionDocumentosController extends Controller
             'comentarios' => 'nullable|string|max:2000',
         ]);
 
-        // Guardar comentario solo si no está vacío
         if (!empty(trim($request->comentarios))) {
             Comentario::create([
                 'documento_id' => $documento->id,
