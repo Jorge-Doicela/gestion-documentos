@@ -18,6 +18,13 @@ use App\Http\Controllers\Coordinador\CoordinadorDocumentoController;
 use App\Http\Controllers\Coordinador\CertificadoController as CoordinadorCertificadoController;
 use App\Http\Controllers\Estudiante\CertificadoController as EstudianteCertificadoController;
 
+// NUEVAS IMPORTACIONES
+use App\Http\Controllers\Admin\EmpresaController;
+use App\Http\Controllers\Admin\PlazaController;
+use App\Http\Controllers\Admin\ConvenioController;
+use App\Http\Controllers\Estudiante\SolicitudPlazaController;
+use App\Http\Controllers\Coordinador\AsignacionController;
+
 // ---------------------------------------------
 // Página de bienvenida
 // ---------------------------------------------
@@ -53,6 +60,7 @@ Route::prefix('coordinador')
     ->middleware(['auth', 'role:Coordinador de Prácticas'])
     ->name('coordinador.')
     ->group(function () {
+
         Route::get('/', [CoordinadorController::class, 'index'])->name('dashboard');
 
         // Revisión de documentos aprobados por tutor
@@ -116,6 +124,10 @@ Route::prefix('estudiante')
 
         // Descargar certificado PDF
         Route::get('certificados/descargar/{uuid}', [EstudianteCertificadoController::class, 'descargar'])->name('certificados.descargar');
+
+        // Formulario y envío de solicitud de plaza
+        Route::get('plazas/{plaza}/postular', [SolicitudPlazaController::class, 'create'])->name('solicitud.create');
+        Route::post('plazas/{plaza}/postular', [SolicitudPlazaController::class, 'store'])->name('solicitud.store');
     });
 
 // ---------------------------------------------
@@ -125,6 +137,7 @@ Route::prefix('admin')
     ->middleware(['auth', 'role:Administrador General|Coordinador de Prácticas'])
     ->name('admin.')
     ->group(function () {
+
         // CRUD usuarios
         Route::resource('users', UserController::class);
 
@@ -149,12 +162,26 @@ Route::prefix('admin')
         // Logs de actividad
         Route::get('logs-actividad', [LogActividadController::class, 'index'])->name('logs_actividad.index');
         Route::get('logs', [LogActividadController::class, 'index'])->name('logs.index');
+
+        // Empresas / Plazas / Convenios
+        Route::resource('empresas', EmpresaController::class);
+        Route::resource('plazas', PlazaController::class);
+        Route::resource('convenios', ConvenioController::class);
     });
 
 // ---------------------------------------------
 // Rutas públicas de normativas
 // ---------------------------------------------
 Route::get('/normativas', [NormativaPublicController::class, 'index'])->name('normativas.index');
+
+// ---------------------------------------------
+// Rutas Coordinador - Gestión de asignaciones de plazas
+// ---------------------------------------------
+Route::middleware(['auth', 'role:Coordinador'])->group(function () {
+    Route::get('coordinador/solicitudes', [AsignacionController::class, 'index'])->name('solicitudes.index');
+    Route::post('coordinador/asignar/{solicitud}', [AsignacionController::class, 'asignar'])->name('solicitudes.asignar');
+    Route::post('coordinador/rechazar/{solicitud}', [AsignacionController::class, 'rechazar'])->name('solicitudes.rechazar');
+});
 
 // ---------------------------------------------
 // Autenticación Breeze
