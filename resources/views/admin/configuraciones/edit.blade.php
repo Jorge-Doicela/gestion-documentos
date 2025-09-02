@@ -1,49 +1,73 @@
 @extends('layouts.app')
 
-@section('content')
-    <div class="max-w-xl mx-auto mt-6">
-        <h1 class="text-2xl font-semibold mb-4">Editar Configuración</h1>
+@section('header')
+    <h1 class="font-display font-bold text-4xl text-institutional-dark leading-tight text-center animate-fade-in-up">
+        ✏️ Editar Configuración
+    </h1>
+@endsection
 
-        <form method="POST" action="{{ route('admin.configuraciones.update', $configuracion) }}" novalidate>
+@section('content')
+    <div class="container-custom py-8 animate-fade-in">
+
+        {{-- Mensajes de feedback --}}
+        @if (session('success'))
+            <div class="p-4 mb-6 rounded-lg shadow-md animate-fade-in bg-success-light text-success" role="alert">
+                <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="p-4 mb-6 rounded-lg shadow-md animate-fade-in bg-danger-light text-danger" role="alert">
+                <i class="fas fa-exclamation-triangle mr-2"></i> {{ session('error') }}
+            </div>
+        @endif
+
+        {{-- Formulario principal --}}
+        <form method="POST" action="{{ route('admin.configuraciones.update', $configuracion) }}"
+            class="space-y-6 bg-white p-6 md:p-8 rounded-2xl shadow-soft-lg">
             @csrf
             @method('PUT')
 
-            <div class="mb-4">
-                <label for="clave" class="block font-semibold mb-1">Clave</label>
+            {{-- Campo Clave (solo lectura) --}}
+            <div>
+                <label for="clave" class="block font-semibold text-sm text-institutional mb-1">Clave</label>
                 <input type="text" id="clave" value="{{ $configuracion->clave }}" disabled
-                    class="w-full border-gray-300 rounded px-3 py-2 bg-gray-100 cursor-not-allowed" aria-disabled="true" />
+                    class="w-full border-gray-300 rounded-lg px-4 py-2 bg-gray-100 text-steel cursor-not-allowed focus:outline-none"
+                    aria-disabled="true" />
+                <p class="text-gray-500 text-xs mt-1">Identificador único de la configuración (no editable).</p>
             </div>
 
-            <div class="mb-4">
-                <label for="valor" class="block font-semibold mb-1">Valor</label>
+            {{-- Campo Valor --}}
+            <div>
+                <label for="valor" class="block font-semibold text-sm text-institutional mb-1">Valor</label>
                 <input type="text" name="valor" id="valor" value="{{ old('valor', $configuracion->valor) }}"
                     required
-                    class="w-full border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('valor') border-red-500 focus:ring-red-500 @enderror"
+                    class="w-full border-gray-300 rounded-lg shadow-sm px-4 py-2 transition duration-400 focus:ring-gold-dark focus:border-gold-dark @error('valor') border-danger focus:ring-danger @enderror"
                     aria-describedby="valor-error" aria-invalid="@error('valor') true @else false @enderror" />
                 @error('valor')
-                    <p id="valor-error" role="alert" class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    <p id="valor-error" role="alert" class="text-danger text-sm mt-1">{{ $message }}</p>
                 @enderror
-                <p class="text-gray-500 text-xs mt-1">Modifique el valor según la configuración.</p>
+                <p class="text-gray-500 text-xs mt-1">Ingrese el valor que tendrá la configuración.</p>
             </div>
 
-            <div class="mb-6">
-                <label for="descripcion" class="block font-semibold mb-1">Descripción</label>
+            {{-- Campo Descripción --}}
+            <div>
+                <label for="descripcion" class="block font-semibold text-sm text-institutional mb-1">Descripción</label>
                 <textarea name="descripcion" id="descripcion" rows="3"
-                    class="w-full border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('descripcion') border-red-500 focus:ring-red-500 @enderror"
+                    class="w-full border-gray-300 rounded-lg shadow-sm px-4 py-2 transition duration-400 focus:ring-gold-dark focus:border-gold-dark @error('descripcion') border-danger focus:ring-danger @enderror"
                     aria-describedby="descripcion-error" aria-invalid="@error('descripcion') true @else false @enderror">{{ old('descripcion', $configuracion->descripcion) }}</textarea>
                 @error('descripcion')
-                    <p id="descripcion-error" role="alert" class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    <p id="descripcion-error" role="alert" class="text-danger text-sm mt-1">{{ $message }}</p>
                 @enderror
+                <p class="text-gray-500 text-xs mt-1">Explique brevemente el propósito de esta configuración.</p>
             </div>
 
-            <div class="flex gap-2">
-                <button type="submit"
-                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600">
-                    Guardar
+            {{-- Botones de acción --}}
+            <div class="flex flex-wrap gap-3 justify-end pt-4 border-t border-gray-200">
+                <button type="submit" class="btn-primary" title="Guardar cambios">
+                    <i class="fas fa-save"></i> Guardar
                 </button>
-                <a href="{{ route('admin.configuraciones.index') }}"
-                    class="inline-block px-4 py-2 border rounded text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400">
-                    Cancelar
+                <a href="{{ route('admin.configuraciones.index') }}" class="btn-secondary" title="Cancelar">
+                    <i class="fas fa-times"></i> Cancelar
                 </a>
             </div>
         </form>

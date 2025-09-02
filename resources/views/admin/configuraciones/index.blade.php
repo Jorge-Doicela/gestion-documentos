@@ -1,66 +1,84 @@
 @extends('layouts.app')
 
-@section('content')
-    <div x-data="{ open: false, configToDelete: null }" class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+@section('header')
+    <h1 class="font-display font-bold text-4xl text-institutional-dark leading-tight animate-fade-in-up">
+        ⚙️ Configuraciones Globales
+    </h1>
+@endsection
 
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-900">Configuraciones Globales del Sistema</h1>
-            <a href="{{ route('admin.configuraciones.create') }}"
-                class="inline-block bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-600"
+@section('content')
+    <div x-data="{ open: false, configToDelete: null }" class="container-custom py-8 animate-fade-in">
+
+        {{-- Header y botón de crear --}}
+        <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+            <h2 class="text-3xl font-bold font-merriweather text-institutional-dark">Listado de Configuraciones</h2>
+            <a href="{{ route('admin.configuraciones.create') }}" class="btn-primary-info"
                 aria-label="Crear nueva configuración">
-                + Nueva Configuración
+                <i class="fas fa-plus"></i> Nueva Configuración
             </a>
         </div>
 
+        {{-- Mensaje de feedback --}}
         @if (session('success'))
-            <div class="mb-4 p-4 bg-green-100 text-green-800 rounded" role="alert">
-                {{ session('success') }}
+            <div class="mb-6 p-4 rounded-lg shadow-md animate-fade-in bg-success-light text-success" role="alert">
+                <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
             </div>
         @endif
 
-        <!-- Formulario búsqueda -->
-        <form method="GET" action="{{ route('admin.configuraciones.index') }}" class="mb-6" role="search"
-            aria-label="Buscar configuraciones">
-            <input type="text" name="search" value="{{ request('search') }}"
-                placeholder="Buscar por clave o descripción" class="border rounded px-3 py-2 w-full md:w-1/2"
-                aria-label="Buscar configuraciones por clave o descripción" />
+        {{-- Formulario de búsqueda --}}
+        <form method="GET" action="{{ route('admin.configuraciones.index') }}"
+            class="mb-6 flex flex-wrap gap-4 items-center" role="search" aria-label="Buscar configuraciones">
+            <div class="flex-grow">
+                <input type="text" name="search" value="{{ request('search') }}"
+                    placeholder="🔍 Buscar por clave o descripción"
+                    class="w-full border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:ring-gold focus:border-gold transition duration-400"
+                    aria-label="Buscar configuraciones por clave o descripción" />
+            </div>
+            <button type="submit" class="btn-primary-gold">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            @if (request('search'))
+                <a href="{{ route('admin.configuraciones.index') }}" class="btn-secondary">
+                    <i class="fas fa-times"></i> Limpiar
+                </a>
+            @endif
         </form>
 
+        {{-- Contenido principal --}}
         @if ($configuraciones->count())
-            <div class="overflow-x-auto bg-white rounded shadow border">
-                <table class="w-full table-auto border" role="table" aria-label="Listado de configuraciones globales">
+            {{-- Tabla de escritorio --}}
+            <div class="overflow-x-auto bg-white rounded-2xl shadow-soft-lg animate-fade-in hidden md:block">
+                <table class="min-w-full divide-y divide-gray-200 text-sm text-steel" role="table"
+                    aria-label="Listado de configuraciones globales">
                     <caption class="sr-only">Listado de configuraciones globales del sistema</caption>
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th scope="col" class="px-4 py-2 text-left font-semibold text-gray-700">Clave</th>
-                            <th scope="col" class="px-4 py-2 font-semibold text-gray-700">Valor</th>
-                            <th scope="col" class="px-4 py-2 font-semibold text-gray-700">Descripción</th>
-                            <th scope="col" class="px-4 py-2 text-center font-semibold text-gray-700">Acciones</th>
+                    <thead
+                        class="bg-institutional-light uppercase text-xs tracking-wider font-semibold text-institutional-dark">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left">Clave</th>
+                            <th scope="col" class="px-6 py-3 text-left">Valor</th>
+                            <th scope="col" class="px-6 py-3 text-left">Descripción</th>
+                            <th scope="col" class="px-6 py-3 text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-gray-200">
                         @foreach ($configuraciones as $config)
-                            <tr class="border-t">
-                                <td class="px-4 py-2 font-mono text-gray-900">{{ $config->clave }}</td>
-                                <td class="px-4 py-2 break-words max-w-xs text-gray-800">
-                                    @if (Str::length($config->valor) > 50)
-                                        {{ Str::limit($config->valor, 50) }}
-                                    @else
-                                        {{ $config->valor }}
-                                    @endif
+                            <tr class="hover:bg-gray-50 transition duration-300">
+                                <td class="px-6 py-4 font-mono font-medium text-institutional-dark">{{ $config->clave }}
                                 </td>
-                                <td class="px-4 py-2 text-sm text-gray-600">{{ $config->descripcion }}</td>
-                                <td class="px-4 py-2 text-center">
+                                <td class="px-6 py-4 break-words max-w-sm">
+                                    {{ Str::length($config->valor) > 50 ? Str::limit($config->valor, 50) : $config->valor }}
+                                </td>
+                                <td class="px-6 py-4">{{ $config->descripcion }}</td>
+                                <td class="px-6 py-4 text-center flex justify-center gap-2">
                                     <a href="{{ route('admin.configuraciones.edit', $config) }}"
-                                        class="text-blue-700 hover:text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1"
-                                        aria-label="Editar configuración {{ $config->clave }}">
-                                        Editar
+                                        class="text-institutional hover:text-institutional-dark transition"
+                                        title="Editar {{ $config->clave }}">
+                                        <i class="fas fa-edit fa-lg"></i>
                                     </a>
-                                    <button type="button"
-                                        @click="open = true; configToDelete = {{ $config->id }}; $nextTick(() => $refs.modal.focus())"
-                                        class="text-red-700 hover:text-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 rounded px-1 ml-2"
-                                        aria-label="Eliminar configuración {{ $config->clave }}">
-                                        Eliminar
+                                    <button type="button" @click="open = true; configToDelete = {{ $config->id }};"
+                                        class="text-danger hover:text-danger-dark transition"
+                                        title="Eliminar {{ $config->clave }}">
+                                        <i class="fas fa-trash fa-lg"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -69,40 +87,75 @@
                 </table>
             </div>
 
-            <div class="mt-4">
+            {{-- Tarjetas móviles --}}
+            <div class="md:hidden space-y-4 animate-fade-in">
+                @foreach ($configuraciones as $config)
+                    <div
+                        class="bg-white rounded-lg shadow-soft-md p-4 space-y-3 border-l-4 border-institutional-light hover:shadow-lg transition-all duration-300">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-lg font-merriweather text-institutional-dark">{{ $config->clave }}
+                            </h3>
+                            <div class="flex gap-3">
+                                <a href="{{ route('admin.configuraciones.edit', $config) }}"
+                                    class="text-institutional hover:text-institutional-dark transition" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" @click="open = true; configToDelete = {{ $config->id }};"
+                                    class="text-danger hover:text-danger-dark transition" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-steel">
+                            <strong class="text-institutional-dark">Valor:</strong> {{ Str::limit($config->valor, 50) }}
+                        </p>
+                        <p class="text-steel text-sm">
+                            <strong class="text-institutional-dark">Descripción:</strong> {{ $config->descripcion }}
+                        </p>
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Paginación --}}
+            <div class="mt-6 flex justify-center animate-fade-in">
                 {{ $configuraciones->links() }}
             </div>
         @else
-            <p class="text-gray-600">No se encontraron configuraciones.</p>
+            <div class="p-6 text-center bg-white rounded-2xl shadow-soft-lg animate-fade-in">
+                <p class="text-gray-600 font-bold text-lg">⚠️ No se encontraron configuraciones.</p>
+                <p class="text-gray-500 mt-2">Puedes crear una nueva configuración para empezar.</p>
+            </div>
         @endif
 
-        <!-- Modal para confirmación de eliminación -->
-        <div x-show="open" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-            style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-title"
-            aria-describedby="modal-desc" @keydown.escape.window="open = false">
-            <div class="bg-white rounded shadow-lg p-6 max-w-md mx-auto" @click.away="open = false" tabindex="0"
-                x-ref="modal" x-trap.noscroll="open">
-                <h2 id="modal-title" class="text-lg font-semibold mb-4">Confirmar eliminación</h2>
-                <p id="modal-desc" class="mb-6">¿Está seguro que desea eliminar esta configuración? Esta acción no se
-                    puede deshacer.</p>
+        {{-- Modal de confirmación (rediseñado) --}}
+        <div x-show="open" class="fixed inset-0 flex items-center justify-center p-4 z-50 transition-opacity duration-300"
+            :class="{ 'opacity-100': open, 'opacity-0': !open }" style="display: none;" role="dialog" aria-modal="true"
+            aria-labelledby="modal-title" aria-describedby="modal-desc" @keydown.escape.window="open = false">
+            <div class="bg-gray-900 bg-opacity-75 absolute inset-0"></div>
+            <div x-show="open" x-transition.duration.300ms
+                class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm transform transition-transform duration-300 scale-95"
+                @click.away="open = false" tabindex="-1" x-ref="modal" x-trap.noscroll="open">
+                <h3 id="modal-title" class="text-2xl font-bold text-danger-dark mb-3">
+                    <i class="fas fa-exclamation-triangle mr-2"></i> Confirmar eliminación
+                </h3>
+                <p id="modal-desc" class="text-steel mb-6">
+                    ¿Estás seguro de que quieres eliminar esta configuración?
+                    <br><strong class="text-danger">Esta acción no se puede deshacer.</strong>
+                </p>
 
-                <form :action="`{{ url('admin/configuraciones') }}/${configToDelete}`" method="POST">
-                    @csrf
-                    @method('DELETE')
-
-                    <div class="flex justify-end space-x-3">
-                        <button type="button" @click="open = false"
-                            class="px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-gray-400">
-                            Cancelar
+                <div class="flex justify-end gap-3">
+                    <button type="button" @click="open = false" class="btn-secondary">
+                        Cancelar
+                    </button>
+                    <form :action="`{{ url('admin/configuraciones') }}/${configToDelete}`" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-primary-danger">
+                            <i class="fas fa-trash"></i> Eliminar
                         </button>
-                        <button type="submit"
-                            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                            Eliminar
-                        </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-
     </div>
 @endsection

@@ -11,21 +11,33 @@ use App\Exports\ConveniosExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-
 class ConvenioController extends Controller
 {
+    /**
+     * Mostrar listado de convenios con paginación
+     */
     public function index()
     {
-        $convenios = Convenio::with('empresa')->get();
+        // Paginación: 10 convenios por página, con empresa relacionada
+        $convenios = Convenio::with('empresa')
+            ->orderBy('fecha_inicio', 'desc')
+            ->paginate(10);
+
         return view('admin.convenios.index', compact('convenios'));
     }
 
+    /**
+     * Mostrar formulario de creación de convenio
+     */
     public function create()
     {
         $empresas = Empresa::all();
         return view('admin.convenios.create', compact('empresas'));
     }
 
+    /**
+     * Guardar nuevo convenio
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -54,17 +66,26 @@ class ConvenioController extends Controller
             ->with('success', 'Convenio creado correctamente.');
     }
 
+    /**
+     * Mostrar detalles de un convenio
+     */
     public function show(Convenio $convenio)
     {
         return view('admin.convenios.show', compact('convenio'));
     }
 
+    /**
+     * Mostrar formulario de edición de convenio
+     */
     public function edit(Convenio $convenio)
     {
         $empresas = Empresa::all();
         return view('admin.convenios.edit', compact('convenio', 'empresas'));
     }
 
+    /**
+     * Actualizar convenio
+     */
     public function update(Request $request, Convenio $convenio)
     {
         $request->validate([
@@ -80,7 +101,7 @@ class ConvenioController extends Controller
         $data = $request->all();
 
         if ($request->hasFile('ruta_pdf')) {
-            // Eliminar PDF anterior
+            // Eliminar PDF anterior si existe
             if ($convenio->ruta_pdf) {
                 Storage::disk('public')->delete($convenio->ruta_pdf);
             }
@@ -93,8 +114,12 @@ class ConvenioController extends Controller
             ->with('success', 'Convenio actualizado correctamente.');
     }
 
+    /**
+     * Eliminar convenio
+     */
     public function destroy(Convenio $convenio)
     {
+        // Eliminar PDF asociado si existe
         if ($convenio->ruta_pdf) {
             Storage::disk('public')->delete($convenio->ruta_pdf);
         }
@@ -105,14 +130,24 @@ class ConvenioController extends Controller
             ->with('success', 'Convenio eliminado correctamente.');
     }
 
+    /**
+     * Exportar convenios a Excel
+     */
     public function exportExcel()
     {
         return Excel::download(new ConveniosExport, 'convenios.xlsx');
     }
 
+    /**
+     * Exportar convenios a PDF
+     */
     public function exportPdf()
     {
-        $convenios = Convenio::with('empresa')->get();
+        // Obtener todos los convenios, sin paginar, para exportación completa
+        $convenios = Convenio::with('empresa')
+            ->orderBy('fecha_inicio', 'desc')
+            ->get();
+
         $pdf = Pdf::loadView('admin.convenios.pdf', compact('convenios'));
         return $pdf->download('convenios.pdf');
     }
