@@ -1,25 +1,43 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }} | ISTPET</title>
+    <title>{{ config('app.name', 'ISTPET') }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased bg-background-gradient">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-        <div class="animate-fade-in-down">
-            <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-institutional animate-bounce-soft" />
-            </a>
-        </div>
+<body
+    class="min-h-screen flex flex-col items-center justify-center font-sans antialiased text-white bg-gradient-main bg-cover bg-fixed bg-center relative overflow-hidden">
+    <div class="absolute inset-0 w-full h-full -z-10">
+        <ul class="bubbles">
+            <li class="bg-institutional-light"></li>
+            <li class="bg-steel-light"></li>
+            <li class="bg-gold-light"></li>
+            <li class="bg-institutional-light"></li>
+            <li class="bg-steel-light"></li>
+            <li class="bg-gold-light"></li>
+            <li class="bg-institutional-light"></li>
+            <li class="bg-steel-light"></li>
+            <li class="bg-gold-light"></li>
+            <li class="bg-institutional-light"></li>
+        </ul>
+    </div>
+    <div class="container-custom flex flex-col items-center justify-center z-10">
+        {{-- Contenedor principal del formulario con los estilos de glassmorphism --}}
+        <div
+            class="w-full sm:max-w-xl p-8 rounded-4xl shadow-3xl glass-dark border border-institutional-light animate-fade-in-up card-hover">
+            <div class="text-center mb-6">
+                {{-- Se usa la tipografía 'display' y el color 'gold' definido en tu configuración --}}
+                <h1 class="text-3xl font-display font-bold text-gold-light mb-2 animate-pulse-accent">Bienvenido</h1>
+                {{-- Se aplica la tipografía 'sans' por defecto con un color claro --}}
+                <p class="text-lg font-sans font-light text-steel-light">Inicia sesión en tu cuenta</p>
+            </div>
 
-        <div class="w-full sm:max-w-md mt-6 px-6 py-4 glass overflow-hidden rounded-lg animate-scale-in-center">
             {{ $slot }}
         </div>
     </div>

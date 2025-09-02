@@ -26,8 +26,11 @@ class TipoDocumentoController extends Controller
 
         $tipos = $query->paginate(10)->withQueryString();
 
-        return view('admin.tipos_documento.index', compact('tipos'));
+        $readonly = auth()->user()->hasRole('Tutor Académico|Estudiante');
+
+        return view('admin.tipos_documento.index', compact('tipos', 'readonly'));
     }
+
 
     public function create()
     {

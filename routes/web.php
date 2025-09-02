@@ -170,6 +170,13 @@ Route::prefix('admin')
         Route::resource('convenios', ConvenioController::class);
     });
 
+// Rutas para ver Tipos de Documento por Tutor y Estudiante
+Route::middleware(['auth', 'role:Tutor Académico|Estudiante'])->prefix('documentos')->name('documentos.')->group(function () {
+    Route::get('tipos', [TipoDocumentoController::class, 'index'])->name('tipos.index'); // Listar todos
+    Route::get('tipos/{tipo}/view', [TipoDocumentoController::class, 'view'])->name('tipos.view'); // Ver individual
+});
+
+
 // ---------------------------------------------
 // Rutas públicas de normativas
 // ---------------------------------------------

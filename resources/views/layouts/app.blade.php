@@ -11,12 +11,12 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased bg-institutional-light min-h-screen">
+<body class="font-sans antialiased min-h-screen">
     <div class="flex flex-col min-h-screen">
         @include('layouts.navigation')
 
         @isset($header)
-            <header class="shadow-lg glass-dark animate-fade-in">
+            <header class="shadow-lg glass-dark backdrop-blur-10 animate-scale-in-center z-50">
                 <div class="container-custom py-8 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>
