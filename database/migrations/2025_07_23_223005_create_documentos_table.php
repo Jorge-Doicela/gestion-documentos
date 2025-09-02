@@ -21,6 +21,9 @@ class CreateDocumentosTable extends Migration
             $table->string('nombre_archivo');
             $table->string('ruta_archivo');
 
+            // Diferencia quién subió el documento
+            $table->enum('subido_por', ['estudiante', 'tutor'])->default('estudiante');
+
             // Estados del documento
             $table->enum('estado', [
                 'pendiente_tutor',         // Subido, esperando revisión del tutor

@@ -19,6 +19,7 @@ class Documento extends Model
         'estado',
         'comentarios_json',
         'fecha_revision',
+        'subido_por', // <-- agregado
     ];
 
     protected $casts = [

@@ -3,7 +3,7 @@
 
 @section('content')
     <div class="p-6 bg-white rounded shadow">
-        <h2 class="text-xl font-bold mb-4">Documentos Aprobados por Tutores</h2>
+        <h2 class="text-xl font-bold mb-4">Documentos para revisar</h2>
 
         @if ($documentos->isEmpty())
             <p>No hay documentos disponibles por revisar.</p>

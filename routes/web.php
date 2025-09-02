@@ -107,7 +107,7 @@ Route::prefix('tutor')
 // Rutas Estudiante
 // ---------------------------------------------
 Route::prefix('estudiante')
-    ->middleware(['auth', 'role:Estudiante'])
+    ->middleware(['auth', 'role:Estudiante|Tutor Académico'])
     ->name('estudiante.')
     ->group(function () {
         Route::view('/', 'dashboard')->name('dashboard');

@@ -249,6 +249,20 @@
                         <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
                     </a>
 
+                    {{--
+<!-- Documentos aprobados por tutor -->
+<a href="{{ route('coordinador.documentos.aprobados') }}"
+    class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
+    <i class="fas fa-folder-open text-4xl text-institutional mb-4"></i>
+    <h3 class="text-xl font-display font-semibold mb-2">Revisar Documentos</h3>
+    <p class="text-sm text-gray-600 mb-4 flex-grow">
+        Gestiona y revisa los documentos subidos por tutores
+    </p>
+    <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
+</a>
+--}}
+
+
                     {{-- CRUD de Asignaciones --}}
                     <a href="{{ route('coordinador.asignaciones.index') }}"
                         class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
@@ -269,117 +283,134 @@
                         <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
                     </button>
 
-                </div>
-            </div>
-
-            {{-- Modal Generar Certificado --}}
-            <div id="generarCertificadoModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                <div class="bg-white rounded-xl shadow-xl w-11/12 md:w-1/2 p-6 relative animate-fade-in-up">
-                    <button onclick="closeModal('generarCertificadoModal')"
-                        class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                    <h3 class="text-2xl font-bold text-institutional mb-4">Generar Certificado</h3>
-                    <form action="{{ route('coordinador.certificados.generar', 0) }}" method="POST"
-                        id="formGenerarCertificado">
-                        @csrf
-                        <label for="user_id" class="block mb-2 font-semibold">Selecciona un estudiante:</label>
-                        <select name="user_id" id="user_id"
-                            class="w-full p-3 rounded-md border border-gray-300 focus:border-institutional focus:ring-1 focus:ring-institutional mb-4">
-                            @foreach (\App\Models\User::role('Estudiante')->get() as $estudiante)
-                                <option value="{{ $estudiante->id }}">{{ $estudiante->name }} - {{ $estudiante->email }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <button type="submit"
-                            class="btn-primary w-full py-3 rounded-md hover:scale-105 transition-transform">Generar
-                            Certificado</button>
-                    </form>
-                </div>
-            </div>
-
-            {{-- Scripts Modal --}}
-            <script>
-                function openModal(id) {
-                    document.getElementById(id).classList.remove('hidden');
-                }
-
-                function closeModal(id) {
-                    document.getElementById(id).classList.add('hidden');
-                }
-
-                document.getElementById('formGenerarCertificado').addEventListener('submit', function(e) {
-                    const select = document.getElementById('user_id');
-                    const userId = select.value;
-                    this.action = "{{ url('coordinador/certificados/generar') }}/" + userId;
-                });
-            </script>
-        @endrole
-
-
-        {{-- Panel Tutor Académico --}}
-        @role('Tutor Académico')
-            <div class="mb-12">
-                <h2 class="text-2xl font-display font-bold mb-6 text-institutional border-b-2 border-institutional/20 pb-2">
-                    Acciones Tutor
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                    {{-- Mis Estudiantes --}}
-                    <a href="{{ route('tutor.estudiantes.index') }}"
-                        class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
-                        <i class="fas fa-users text-4xl text-institutional mb-4"></i>
-                        <h3 class="text-xl font-display font-semibold mb-2">Mis Estudiantes</h3>
-                        <p class="text-sm text-gray-600 mb-4 flex-grow">Gestiona y consulta la información de tus
-                            estudiantes
-                            asignados.</p>
-                        <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
-                    </a>
-
-                    {{-- Revisión de documentos --}}
-                    <a href="{{ route('tutor.revision.index') }}"
-                        class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
-                        <i class="fas fa-clipboard-check text-4xl text-institutional mb-4"></i>
-                        <h3 class="text-xl font-display font-semibold mb-2">Revisión de Documentos</h3>
-                        <p class="text-sm text-gray-600 mb-4 flex-grow">Revisa y evalúa los documentos enviados por tus
-                            estudiantes.</p>
-                        <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
-                    </a>
-
-                    {{-- Historial de revisión --}}
-                    <a href="{{ route('tutor.historial.index') }}"
-                        class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
-                        <i class="fas fa-history text-4xl text-institutional mb-4"></i>
-                        <h3 class="text-xl font-display font-semibold mb-2">Historial de Revisión</h3>
-                        <p class="text-sm text-gray-600 mb-4 flex-grow">Consulta el historial completo de documentos
-                            revisados.
-                        </p>
-                        <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
-                    </a>
-
-                    {{-- Tipos de Documento --}}
-                    <a href="{{ route('documentos.tipos.index') }}"
-                        class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
-                        <i class="fas fa-file-contract text-4xl text-institutional mb-4"></i>
-                        <h3 class="text-xl font-display font-semibold mb-2">Tipos de Documento</h3>
-                        <p class="text-sm text-gray-600 mb-4 flex-grow">Consulta los tipos de documentos que debes
-                            revisar.</p>
-                        <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
-                    </a>
-
-                    {{-- Normativas --}}
-                    <a href="{{ route('normativas.index') }}"
-                        class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
-                        <i class="fas fa-book-open text-4xl text-institutional mb-4"></i>
-                        <h3 class="text-xl font-display font-semibold mb-2">Normativas</h3>
-                        <p class="text-sm text-gray-600 mb-4 flex-grow">Consulta las normativas aplicables a tus
-                            estudiantes.</p>
-                        <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
-                    </a>
 
                 </div>
-            </div>
-        @endrole
 
-    </div>
-@endsection
+                {{-- Modal Generar Certificado --}}
+                <div id="generarCertificadoModal"
+                    class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-xl shadow-xl w-11/12 md:w-1/2 p-6 relative animate-fade-in-up">
+                        <button onclick="closeModal('generarCertificadoModal')"
+                            class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                        <h3 class="text-2xl font-bold text-institutional mb-4">Generar Certificado</h3>
+                        <form action="{{ route('coordinador.certificados.generar', 0) }}" method="POST"
+                            id="formGenerarCertificado">
+                            @csrf
+                            <label for="user_id" class="block mb-2 font-semibold">Selecciona un estudiante:</label>
+                            <select name="user_id" id="user_id"
+                                class="w-full p-3 rounded-md border border-gray-300 focus:border-institutional focus:ring-1 focus:ring-institutional mb-4">
+                                @foreach (\App\Models\User::role('Estudiante')->get() as $estudiante)
+                                    <option value="{{ $estudiante->id }}">{{ $estudiante->name }} - {{ $estudiante->email }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <button type="submit"
+                                class="btn-primary w-full py-3 rounded-md hover:scale-105 transition-transform">Generar
+                                Certificado</button>
+                        </form>
+                    </div>
+                </div>
+
+                {{-- Scripts Modal --}}
+                <script>
+                    function openModal(id) {
+                        document.getElementById(id).classList.remove('hidden');
+                    }
+
+                    function closeModal(id) {
+                        document.getElementById(id).classList.add('hidden');
+                    }
+
+                    document.getElementById('formGenerarCertificado').addEventListener('submit', function(e) {
+                        const select = document.getElementById('user_id');
+                        const userId = select.value;
+                        this.action = "{{ url('coordinador/certificados/generar') }}/" + userId;
+                    });
+                </script>
+            @endrole
+
+
+            {{-- Panel Tutor Académico --}}
+            @role('Tutor Académico')
+                <div class="mb-12">
+                    <h2
+                        class="text-2xl font-display font-bold mb-6 text-institutional border-b-2 border-institutional/20 pb-2">
+                        Acciones Tutor
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                        {{-- Mis Estudiantes --}}
+                        <a href="{{ route('tutor.estudiantes.index') }}"
+                            class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
+                            <i class="fas fa-users text-4xl text-institutional mb-4"></i>
+                            <h3 class="text-xl font-display font-semibold mb-2">Mis Estudiantes</h3>
+                            <p class="text-sm text-gray-600 mb-4 flex-grow">Gestiona y consulta la información de tus
+                                estudiantes
+                                asignados.</p>
+                            <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
+                        </a>
+
+                        {{-- Revisión de documentos --}}
+                        <a href="{{ route('tutor.revision.index') }}"
+                            class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
+                            <i class="fas fa-clipboard-check text-4xl text-institutional mb-4"></i>
+                            <h3 class="text-xl font-display font-semibold mb-2">Revisión de Documentos</h3>
+                            <p class="text-sm text-gray-600 mb-4 flex-grow">Revisa y evalúa los documentos enviados por tus
+                                estudiantes.</p>
+                            <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
+                        </a>
+
+                        {{-- Historial de revisión --}}
+                        <a href="{{ route('tutor.historial.index') }}"
+                            class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
+                            <i class="fas fa-history text-4xl text-institutional mb-4"></i>
+                            <h3 class="text-xl font-display font-semibold mb-2">Historial de Revisión</h3>
+                            <p class="text-sm text-gray-600 mb-4 flex-grow">Consulta el historial completo de documentos
+                                revisados.
+                            </p>
+                            <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
+                        </a>
+
+                        {{--
+<!-- Subir nuevo documento -->
+<a href="{{ route('estudiante.documentos.create', ['tipoDocumento' => 1]) }}"
+    class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
+    <i class="fas fa-upload text-4xl text-institutional mb-4"></i>
+    <h3 class="text-xl font-display font-semibold mb-2">Subir Documento</h3>
+    <p class="text-sm text-gray-600 mb-4 flex-grow">
+        Carga tu documento en formato PDF para la revisión del coordinador académico.
+    </p>
+    <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
+</a>
+--}}
+
+
+
+                        {{-- Tipos de Documento --}}
+                        <a href="{{ route('documentos.tipos.index') }}"
+                            class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
+                            <i class="fas fa-file-contract text-4xl text-institutional mb-4"></i>
+                            <h3 class="text-xl font-display font-semibold mb-2">Tipos de Documento</h3>
+                            <p class="text-sm text-gray-600 mb-4 flex-grow">Consulta los tipos de documentos que debes
+                                revisar.</p>
+                            <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
+                        </a>
+
+                        {{-- Normativas --}}
+                        <a href="{{ route('normativas.index') }}"
+                            class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
+                            <i class="fas fa-book-open text-4xl text-institutional mb-4"></i>
+                            <h3 class="text-xl font-display font-semibold mb-2">Normativas</h3>
+                            <p class="text-sm text-gray-600 mb-4 flex-grow">Consulta las normativas aplicables a tus
+                                estudiantes.</p>
+                            <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
+                        </a>
+
+                    </div>
+                </div>
+            @endrole
+
+        </div>
+    @endsection

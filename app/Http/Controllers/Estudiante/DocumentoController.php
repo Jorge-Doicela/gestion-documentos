@@ -69,12 +69,14 @@ class DocumentoController extends Controller
 
         $existe = Documento::where('user_id', $user->id)
             ->where('tipo_documento_id', $request->tipo_documento_id)
-            ->where('estado', '!=', 'rechazado')
+            ->where('subido_por', 'tutor')
+            ->where('estado', '!=', 'rechazado_coordinador')
             ->exists();
 
         if ($existe) {
-            return back()->withErrors(['archivo' => 'Ya has subido un documento de este tipo. Si fue rechazado, por favor edítalo para subir una nueva versión.'])->withInput();
+            return back()->withErrors(['archivo' => 'Ya has subido un documento de este tipo.'])->withInput();
         }
+
 
         $file = $request->file('archivo');
         $nombreArchivo = Str::uuid() . '.' . $file->getClientOriginalExtension();
@@ -217,5 +219,37 @@ class DocumentoController extends Controller
         }
 
         return Storage::disk('public')->download($certificado->ruta_pdf, "Certificado_{$user->name}.pdf");
+    }
+
+    public function storeTutor(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user->hasRole('tutor')) abort(403);
+
+        $tamanoMB = 5;
+        $tamanoKB = $tamanoMB * 1024;
+        $rutaBase = 'documentos';
+
+        $request->validate([
+            'tipo_documento_id' => 'required|exists:tipos_documento,id',
+            'archivo' => "required|file|mimes:pdf|max:$tamanoKB",
+        ]);
+
+        $file = $request->file('archivo');
+        $nombreArchivo = Str::uuid() . '.' . $file->getClientOriginalExtension();
+        $ruta = "$rutaBase/{$user->id}/$nombreArchivo";
+
+        Storage::disk('public')->put($ruta, file_get_contents($file));
+
+        Documento::create([
+            'user_id' => $user->id,
+            'tipo_documento_id' => $request->tipo_documento_id,
+            'nombre_archivo' => $file->getClientOriginalName(),
+            'ruta_archivo' => $ruta,
+            'estado' => 'aprobado_tutor',
+            'subido_por' => 'tutor',
+        ]);
+
+        return redirect()->route('tutor.documentos.index')->with('success', 'Documento subido correctamente.');
     }
 }
