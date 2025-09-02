@@ -7,6 +7,9 @@ use App\Models\Plaza;
 use App\Models\Empresa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Exports\PlazasExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PlazaController extends Controller
 {
@@ -143,5 +146,38 @@ class PlazaController extends Controller
         $plazas = $plazas->paginate(10); // Paginación
 
         return view('plazas.disponibles', compact('plazas'));
+    }
+    // Export Excel
+    public function exportExcel(Request $request)
+    {
+        $filters = $request->only(['empresa_id', 'carrera', 'periodo_academico', 'vigentes']);
+        return Excel::download(new PlazasExport($filters), 'plazas.xlsx');
+    }
+
+    // Export PDF
+    public function exportPdf(Request $request)
+    {
+        $query = Plaza::with('empresa');
+
+        // Aplicar filtros
+        if ($request->filled('empresa_id')) {
+            $query->where('empresa_id', $request->empresa_id);
+        }
+        if ($request->filled('carrera')) {
+            $query->where('carrera', $request->carrera);
+        }
+        if ($request->filled('periodo_academico')) {
+            $query->where('periodo_academico', $request->periodo_academico);
+        }
+        if ($request->filled('vigentes')) {
+            $hoy = date('Y-m-d');
+            $query->where('fecha_inicio', '<=', $hoy)
+                ->where('fecha_fin', '>=', $hoy);
+        }
+
+        $plazas = $query->get();
+
+        $pdf = Pdf::loadView('admin.plazas.pdf', compact('plazas'));
+        return $pdf->download('plazas.pdf');
     }
 }

@@ -42,6 +42,14 @@
             <button type="submit" class="bg-blue-500 text-white px-4 py-1 rounded">Filtrar</button>
         </form>
 
+        <div class="flex justify-end gap-2 mb-4">
+            <a href="{{ route('admin.plazas.export.excel', request()->query()) }}"
+                class="bg-green-500 text-white px-4 py-2 rounded">Exportar Excel</a>
+            <a href="{{ route('admin.plazas.export.pdf', request()->query()) }}"
+                class="bg-red-500 text-white px-4 py-2 rounded">Exportar PDF</a>
+        </div>
+
+
         {{-- Tabla de plazas --}}
         <table class="min-w-full bg-white border border-gray-200 rounded">
             <thead>

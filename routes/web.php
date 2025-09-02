@@ -142,6 +142,12 @@ Route::prefix('admin')
         // CRUD usuarios
         Route::resource('users', UserController::class);
 
+        // Exportar usuarios
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('export/excel', [UserController::class, 'exportExcel'])->name('export.excel');
+            Route::get('export/pdf', [UserController::class, 'exportPDF'])->name('export.pdf');
+        });
+
         // CRUD tipos de documentos
         Route::resource('tipos-documento', TipoDocumentoController::class);
         Route::get('tipos-documento/{tipo}/download', [TipoDocumentoController::class, 'download'])->name('tipos-documento.download');
@@ -166,8 +172,25 @@ Route::prefix('admin')
 
         // Empresas / Plazas / Convenios
         Route::resource('empresas', EmpresaController::class);
+
+        // Rutas de exportación para empresas (añadir justo aquí)
+        Route::prefix('empresas')->name('empresas.')->group(function () {
+            Route::get('export/excel', [EmpresaController::class, 'exportExcel'])->name('export.excel');
+            Route::get('export/pdf', [EmpresaController::class, 'exportPdf'])->name('export.pdf');
+        });
+
+        // CRUD plazas
         Route::resource('plazas', PlazaController::class);
+        Route::prefix('plazas')->name('plazas.')->group(function () {
+            Route::get('export/excel', [PlazaController::class, 'exportExcel'])->name('export.excel');
+            Route::get('export/pdf', [PlazaController::class, 'exportPdf'])->name('export.pdf');
+        });
+        // CRUD convenios
         Route::resource('convenios', ConvenioController::class);
+        Route::prefix('convenios')->name('convenios.')->group(function () {
+            Route::get('export/excel', [ConvenioController::class, 'exportExcel'])->name('export.excel');
+            Route::get('export/pdf', [ConvenioController::class, 'exportPdf'])->name('export.pdf');
+        });
     });
 
 // Rutas para ver Tipos de Documento por Tutor y Estudiante

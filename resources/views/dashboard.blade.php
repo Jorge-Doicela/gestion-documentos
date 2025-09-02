@@ -193,6 +193,33 @@
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
+                    {{-- CRUD Empresas --}}
+                    <a href="{{ route('admin.empresas.index') }}"
+                        class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
+                        <i class="fas fa-building text-4xl text-institutional mb-4"></i>
+                        <h3 class="text-xl font-display font-semibold mb-2">Empresas</h3>
+                        <p class="text-sm text-gray-600 mb-4 flex-grow">Gestiona las empresas vinculadas a las prácticas.</p>
+                        <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
+                    </a>
+
+                    {{-- CRUD Plazas --}}
+                    <a href="{{ route('admin.plazas.index') }}"
+                        class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
+                        <i class="fas fa-briefcase text-4xl text-institutional mb-4"></i>
+                        <h3 class="text-xl font-display font-semibold mb-2">Plazas</h3>
+                        <p class="text-sm text-gray-600 mb-4 flex-grow">Gestiona las plazas disponibles para prácticas.</p>
+                        <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
+                    </a>
+
+                    {{-- CRUD Convenios --}}
+                    <a href="{{ route('admin.convenios.index') }}"
+                        class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">
+                        <i class="fas fa-handshake text-4xl text-institutional mb-4"></i>
+                        <h3 class="text-xl font-display font-semibold mb-2">Convenios</h3>
+                        <p class="text-sm text-gray-600 mb-4 flex-grow">Gestiona los convenios firmados con las empresas.</p>
+                        <span class="btn-primary w-full inline-block mt-auto">Acceder</span>
+                    </a>
+
                     {{-- CRUD Tipos de Documento --}}
                     <a href="{{ route('admin.tipos-documento.index') }}"
                         class="card-hover glass p-6 rounded-xl shadow-lg text-center flex flex-col items-center justify-between">

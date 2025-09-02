@@ -9,6 +9,9 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use App\Models\Carrera;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\UsersExport;
+use PDF;
 
 class UserController extends Controller
 {
@@ -181,5 +184,29 @@ class UserController extends Controller
     {
         $user->delete();
         return redirect()->route('admin.users.index')->with('success', 'Usuario eliminado correctamente.');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $filters = $request->only(['search', 'role', 'carrera_id', 'tutor_id']);
+        return Excel::download(new UsersExport($filters), 'usuarios.xlsx');
+    }
+
+    public function exportPDF(Request $request)
+    {
+        $query = User::with(['roles', 'carrera', 'tutor']);
+
+        if ($request->filled('search')) {
+            $query->where(fn($q) => $q->where('name', 'like', "%{$request->search}%")
+                ->orWhere('email', 'like', "%{$request->search}%"));
+        }
+        if ($request->filled('role')) $query->role($request->role);
+        if ($request->filled('carrera_id')) $query->where('carrera_id', $request->carrera_id);
+        if ($request->filled('tutor_id')) $query->where('tutor_id', $request->tutor_id);
+
+        $users = $query->get();
+
+        $pdf = PDF::loadView('admin.users.pdf', compact('users'));
+        return $pdf->download('usuarios.pdf');
     }
 }

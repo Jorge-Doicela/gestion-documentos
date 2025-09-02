@@ -7,6 +7,10 @@ use App\Models\Convenio;
 use App\Models\Empresa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Exports\ConveniosExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class ConvenioController extends Controller
 {
@@ -99,5 +103,17 @@ class ConvenioController extends Controller
 
         return redirect()->route('admin.convenios.index')
             ->with('success', 'Convenio eliminado correctamente.');
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new ConveniosExport, 'convenios.xlsx');
+    }
+
+    public function exportPdf()
+    {
+        $convenios = Convenio::with('empresa')->get();
+        $pdf = Pdf::loadView('admin.convenios.pdf', compact('convenios'));
+        return $pdf->download('convenios.pdf');
     }
 }

@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Empresa;
 use Illuminate\Http\Request;
+use App\Exports\EmpresasExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EmpresaController extends Controller
 {
@@ -83,5 +86,17 @@ class EmpresaController extends Controller
         $empresa->delete();
         return redirect()->route('admin.empresas.index')
             ->with('success', 'Empresa eliminada correctamente.');
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new EmpresasExport, 'empresas.xlsx');
+    }
+
+    public function exportPdf()
+    {
+        $empresas = Empresa::all();
+        $pdf = Pdf::loadView('admin.empresas.pdf', compact('empresas'));
+        return $pdf->download('empresas.pdf');
     }
 }
